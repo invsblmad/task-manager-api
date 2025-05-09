@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.inai.taskmanager.models.auth.TokenResponse;
 import kg.inai.taskmanager.security.jwt.JwtTokenService;
+import kg.inai.taskmanager.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Token API", description = "Управление токенами пользователей")
 public class TokenController {
 
+    private final AuthService authService;
     private final JwtTokenService jwtTokenService;
 
     @GetMapping("/refresh")
@@ -29,6 +31,6 @@ public class TokenController {
                     content = @Content(schema = @Schema(implementation = TokenResponse.class)))
     })
     public ResponseEntity<TokenResponse> refresh() {
-        return ResponseEntity.ok(jwtTokenService.refreshTokens());
+        return ResponseEntity.ok(jwtTokenService.generateTokens(authService.getAuthenticatedUser()));
     }
 }
