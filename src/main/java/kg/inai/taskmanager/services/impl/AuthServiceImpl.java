@@ -2,6 +2,7 @@ package kg.inai.taskmanager.services.impl;
 
 import kg.inai.taskmanager.entities.User;
 import kg.inai.taskmanager.exceptions.PasswordNotConfirmedException;
+import kg.inai.taskmanager.exceptions.UserAlreadyExistsException;
 import kg.inai.taskmanager.mappers.UserMapper;
 import kg.inai.taskmanager.models.auth.SignInRequest;
 import kg.inai.taskmanager.models.auth.SignUpRequest;
@@ -10,6 +11,7 @@ import kg.inai.taskmanager.repositories.UserRepository;
 import kg.inai.taskmanager.security.jwt.JwtTokenService;
 import kg.inai.taskmanager.services.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,13 +48,17 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenResponse signUp(SignUpRequest signUpRequest) {
         if (!signUpRequest.password().equals(signUpRequest.passwordConfirmation())) {
-            throw new PasswordNotConfirmedException("The password hasn't been confirmed");
+            throw new PasswordNotConfirmedException("Пароли не совпадают");
         }
 
         User user = userMapper.toEntity(signUpRequest);
         user.setPassword(passwordEncoder.encode(signUpRequest.password()));
 
-        user = userRepository.save(user);
+        try {
+            user = userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new UserAlreadyExistsException("Пользователь с таким именем уже существует");
+        }
         return jwtTokenService.generateTokens(user);
     }
 

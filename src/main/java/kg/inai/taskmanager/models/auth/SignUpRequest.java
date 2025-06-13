@@ -6,20 +6,22 @@ import jakarta.validation.constraints.Size;
 import kg.inai.taskmanager.enums.Role;
 
 public record SignUpRequest(
-        @NotBlank(message = "The first name can't be null or empty")
+        @NotBlank(message = "Имя не должно быть пустым")
         String firstName,
 
-        @NotBlank(message = "The last name can't be null or empty")
+        @NotBlank(message = "Фамилия не должна быть пустой")
         String lastName,
 
-        @NotBlank(message = "The email can't be null or empty")
+        @NotBlank(message = "Почта не может быть пустой")
         String email,
 
-        @NotBlank(message = "The password can't be null or empty")
-        @Size(min = 5, message = "The password must be at least 5 characters long")
+        @NotBlank(message = "Пароль не может быть пустым")
+        @Size(min = 5, message = "Пароль должен содержать минимум 5 символов")
         String password,
 
+        @NotBlank(message = "Требуется подтверждение пароля")
         String passwordConfirmation,
-        @NotNull(message = "User role can't be null")
+
+        @NotNull(message = "Роль пользователя не может быть пустой")
         Role role
 ) {}

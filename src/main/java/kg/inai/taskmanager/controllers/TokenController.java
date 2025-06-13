@@ -28,7 +28,8 @@ public class TokenController {
     @Operation(summary = "Обновление пары access/refresh токенов")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class)))
+                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public ResponseEntity<TokenResponse> refresh() {
         return ResponseEntity.ok(jwtTokenService.generateTokens(authService.getAuthenticatedUser()));

@@ -3,9 +3,9 @@ package kg.inai.taskmanager.models.auth;
 import jakarta.validation.constraints.NotBlank;
 
 public record SignInRequest(
-        @NotBlank(message = "The email can't be null or empty")
+        @NotBlank(message = "Почта не может быть пустой")
         String email,
 
-        @NotBlank(message = "The password can't be null or empty")
+        @NotBlank(message = "Пароль не может быть пустым")
         String password
 ) {}
