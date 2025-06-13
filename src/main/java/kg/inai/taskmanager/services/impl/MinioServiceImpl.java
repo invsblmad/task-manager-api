@@ -43,10 +43,10 @@ public class MinioServiceImpl implements MinioService {
 
     @Override
     public String getPublicUrl(String filePath) {
-        return String.format("%s/%s/%s",
-                properties.getUrl(),
-                properties.getBucket(),
-                filePath.replaceAll("^/+", "")
+        return filePath == null ? null : String.format("%s/%s/%s",
+                        properties.getUrl(),
+                        properties.getBucket(),
+                        filePath.replaceAll("^/+", "")
         );
     }
 

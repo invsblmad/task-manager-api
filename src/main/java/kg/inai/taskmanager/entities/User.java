@@ -2,11 +2,14 @@ package kg.inai.taskmanager.entities;
 
 import jakarta.persistence.*;
 import kg.inai.taskmanager.enums.Role;
-import lombok.*;
+import kg.inai.taskmanager.enums.UserStatus;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -28,10 +31,23 @@ public class User extends BaseEntity implements UserDetails {
 
     private String lastName;
 
-    private String avatarUrl;
+    private String avatarPath;
+
+    private String phoneNumber;
+
+    private String jobTitle;
+
+    private String department;
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
+
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    private Team team;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -55,7 +71,7 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return status == UserStatus.ACTIVE;
     }
 
     @Override
@@ -65,6 +81,6 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return status == UserStatus.ACTIVE;
     }
 }

@@ -5,11 +5,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Role {
-    DEV("Разработчик"),
-    TEAM_LEAD("Тимлид"),
-    MANAGER("Менеджер"),
-    ADMIN("Администратор"),
+public enum UserStatus {
+    ACTIVE("Активный"),
+    BLOCKED("Заблокированный"),
     ;
 
     private final String value;
