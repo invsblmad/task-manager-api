@@ -1,5 +1,6 @@
 package kg.inai.taskmanager.services.impl;
 
+import kg.inai.taskmanager.entities.Team;
 import kg.inai.taskmanager.entities.User;
 import kg.inai.taskmanager.enums.FileType;
 import kg.inai.taskmanager.enums.UserStatus;
@@ -9,6 +10,7 @@ import kg.inai.taskmanager.mappers.UserMapper;
 import kg.inai.taskmanager.models.user.UserDetailedResponse;
 import kg.inai.taskmanager.models.user.UserResponse;
 import kg.inai.taskmanager.models.user.UserUpdateRequest;
+import kg.inai.taskmanager.repositories.TeamRepository;
 import kg.inai.taskmanager.repositories.UserRepository;
 import kg.inai.taskmanager.services.AuthService;
 import kg.inai.taskmanager.services.MinioService;
@@ -20,12 +22,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final TeamRepository teamRepository;
     private final UserMapper userMapper;
     private final AuthService authService;
     private final MinioService minioService;
@@ -34,6 +39,13 @@ public class UserServiceImpl implements UserService {
     public Page<UserResponse> getAll(Pageable pageable) {
         return userRepository.findAll(pageable)
                 .map(user -> userMapper.toModel(user, minioService));
+    }
+
+    @Override
+    public List<UserResponse> getAllActive() {
+        return userRepository.findAllByStatus(UserStatus.ACTIVE).stream()
+                .map(user -> userMapper.toModel(user, minioService))
+                .toList();
     }
 
     @Override
@@ -68,6 +80,37 @@ public class UserServiceImpl implements UserService {
         if (avatar != null && !avatar.isEmpty()) {
             updateAvatar(user, avatar);
         }
+        userRepository.save(user);
+    }
+
+    @Override
+    public List<UserResponse> getByTeam(Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new NotFoundException("Команда не найдена"));
+
+        return team.getUsers().stream()
+                .map(user -> userMapper.toModel(user, minioService))
+                .toList();
+    }
+
+    @Override
+    public void addToTeam(Long userId, Long teamId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new NotFoundException("Команда не найдена"));
+
+        user.setTeam(team);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void deleteFromTeam(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        user.setTeam(null);
         userRepository.save(user);
     }
 

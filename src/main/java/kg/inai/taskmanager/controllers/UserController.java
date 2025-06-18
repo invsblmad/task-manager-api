@@ -20,6 +20,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -28,9 +30,9 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping
+    @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Получение списка всех пользователей")
+    @Operation(summary = "Получение списка всех пользователей с пагинацией")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
                     content = @Content(schema = @Schema(implementation = TokenResponse.class))),
@@ -40,9 +42,19 @@ public class UserController {
         return ResponseEntity.ok(userService.getAll(pageable));
     }
 
+    @GetMapping("/active")
+    @Operation(summary = "Получение списка активных пользователей")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно",
+                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+    })
+    public ResponseEntity<List<UserResponse>> getAllActive() {
+        return ResponseEntity.ok(userService.getAllActive());
+    }
+
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Получение данных пользователя по id")
+    @Operation(summary = "Получение данных пользователя")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
                     content = @Content(schema = @Schema(implementation = TokenResponse.class))),
@@ -54,7 +66,7 @@ public class UserController {
 
     @PutMapping("/block/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Блокировака пользователя по id")
+    @Operation(summary = "Блокировака пользователя")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
                     content = @Content(schema = @Schema(implementation = TokenResponse.class))),
@@ -87,5 +99,39 @@ public class UserController {
                        @RequestPart(name = "data") @Valid UserUpdateRequest request,
                        @RequestPart(name = "file", required = false) MultipartFile avatar) {
         userService.update(id, request, avatar);
+    }
+
+    @GetMapping("/by-team/{teamId}")
+    @Operation(summary = "Получение пользователей по команде")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно",
+                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+        })
+    public List<UserResponse> getByTeam(@PathVariable Long teamId) {
+        return userService.getByTeam(teamId);
+    }
+
+    @PutMapping("/{userId}/add-to-team/{teamId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEAM_LEAD')")
+    @Operation(summary = "Добавление пользователя в команду")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно",
+                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+    })
+    public void addToTeam(@PathVariable Long userId, @PathVariable Long teamId) {
+        userService.addToTeam(userId, teamId);
+    }
+
+    @PutMapping("/{userId}/delete-from-team")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TEAM_LEAD')")
+    @Operation(summary = "Удаление пользователя из команды")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно",
+                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+    })
+    public void addToTeam(@PathVariable Long userId) {
+        userService.deleteFromTeam(userId);
     }
 }
