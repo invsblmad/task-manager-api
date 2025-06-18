@@ -8,7 +8,6 @@ import lombok.Getter;
 public enum Role {
     DEV("Разработчик"),
     TEAM_LEAD("Тимлид"),
-    MANAGER("Менеджер"),
     ADMIN("Администратор"),
     ;
 
