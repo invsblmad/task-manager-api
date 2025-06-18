@@ -17,7 +17,7 @@ public interface UserMapper {
     User toEntity(SignUpRequest signUpRequest);
     User toUpdatedEntity(UserUpdateRequest request, @MappingTarget User user);
     @Mapping(target = "avatarUrl", expression = "java(minioService.getPublicUrl(user.getAvatarPath()))")
-    UserResponse toDto(User user, @Context MinioService minioService);
+    UserResponse toModel(User user, @Context MinioService minioService);
     @Mapping(target = "avatarUrl", expression = "java(minioService.getPublicUrl(user.getAvatarPath()))")
-    UserDetailedResponse toDetailedDto(User user, @Context MinioService minioService);
+    UserDetailedResponse toDetailedModel(User user, @Context MinioService minioService);
 }

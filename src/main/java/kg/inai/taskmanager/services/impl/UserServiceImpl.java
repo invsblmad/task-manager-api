@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<UserResponse> getAll(Pageable pageable) {
         return userRepository.findAll(pageable)
-                .map(user -> userMapper.toDto(user, minioService));
+                .map(user -> userMapper.toModel(user, minioService));
     }
 
     @Override
@@ -41,12 +41,12 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
-        return userMapper.toDetailedDto(user, minioService);
+        return userMapper.toDetailedModel(user, minioService);
     }
 
     @Override
     public UserDetailedResponse getAuthenticatedUser() {
-        return userMapper.toDetailedDto(authService.getAuthenticatedUser(), minioService);
+        return userMapper.toDetailedModel(authService.getAuthenticatedUser(), minioService);
     }
 
     @Override

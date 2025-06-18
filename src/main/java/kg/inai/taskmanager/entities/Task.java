@@ -1,10 +1,16 @@
 package kg.inai.taskmanager.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import kg.inai.taskmanager.enums.TaskType;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "tasks")
 public class Task extends BaseEntity {
@@ -12,6 +18,9 @@ public class Task extends BaseEntity {
     private String title;
 
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private TaskType type;
 
     @ManyToOne
     @JoinColumn(name = "parent_task_id")
