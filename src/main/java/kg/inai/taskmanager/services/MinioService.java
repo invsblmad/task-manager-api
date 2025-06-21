@@ -4,9 +4,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface MinioService {
 
-    String uploadFile(MultipartFile file, String path);
-
     String getPublicUrl(String filePath);
 
-    void deleteFile(String filePath);
+    String save(MultipartFile file, String oldPath, String path);
+
+    void delete(String filePath);
 }

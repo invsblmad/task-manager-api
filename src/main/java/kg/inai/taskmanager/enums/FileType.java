@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum FileType {
     AVATAR("avatars"),
     TASK_ATTACHMENT("task-attachments"),
+    PROJECT_IMAGE("project-images")
     ;
 
     private final String path;

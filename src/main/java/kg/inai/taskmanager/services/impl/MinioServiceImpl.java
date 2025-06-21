@@ -7,6 +7,7 @@ import kg.inai.taskmanager.configs.properties.MinioProperties;
 import kg.inai.taskmanager.exceptions.MinioException;
 import kg.inai.taskmanager.services.MinioService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MinioServiceImpl implements MinioService {
@@ -24,7 +26,41 @@ public class MinioServiceImpl implements MinioService {
     private final MinioProperties properties;
 
     @Override
-    public String uploadFile(MultipartFile file, String path) {
+    public String getPublicUrl(String filePath) {
+        return filePath == null ? null : String.format("%s/%s/%s",
+                properties.getUrl(),
+                properties.getBucket(),
+                filePath.replaceAll("^/+", "")
+        );
+    }
+
+    @Override
+    public String save(MultipartFile file, String oldPath, String path) {
+        if (oldPath != null) {
+            try {
+                delete(oldPath);
+            } catch (MinioException e) {
+                log.warn("Не удалось удалить изображение {}, причина: {}", oldPath, e.getMessage());
+            }
+        }
+        return upload(file, path);
+    }
+
+    @Override
+    public void delete(String filePath) {
+        try {
+            client.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(properties.getBucket())
+                            .object(filePath)
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new MinioException(String.format("Не удалось удалить файл, ошибка: %s", e.getMessage()));
+        }
+    }
+
+    private String upload(MultipartFile file, String path) {
         String filePath = buildFullPath(file.getOriginalFilename(), path);
         try (InputStream is = file.getInputStream()) {
             client.putObject(
@@ -38,29 +74,6 @@ public class MinioServiceImpl implements MinioService {
             return filePath;
         } catch (Exception e) {
             throw new MinioException(String.format("Не удалось загрузить файл, ошибка: %s", e.getMessage()));
-        }
-    }
-
-    @Override
-    public String getPublicUrl(String filePath) {
-        return filePath == null ? null : String.format("%s/%s/%s",
-                        properties.getUrl(),
-                        properties.getBucket(),
-                        filePath.replaceAll("^/+", "")
-        );
-    }
-
-    @Override
-    public void deleteFile(String filePath) {
-        try {
-            client.removeObject(
-                    RemoveObjectArgs.builder()
-                            .bucket(properties.getBucket())
-                            .object(filePath)
-                            .build()
-            );
-        } catch (Exception e) {
-            throw new MinioException(String.format("Не удалось удалить файл, ошибка: %s", e.getMessage()));
         }
     }
 
