@@ -1,6 +1,7 @@
 package kg.inai.taskmanager.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,7 +36,7 @@ public class UserController {
     @Operation(summary = "Получение списка всех пользователей с пагинацией")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponse.class)))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public ResponseEntity<Page<UserResponse>> getAll(Pageable pageable) {
@@ -46,7 +47,7 @@ public class UserController {
     @Operation(summary = "Получение списка активных пользователей")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponse.class)))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public ResponseEntity<List<UserResponse>> getAllActive() {
@@ -57,7 +58,7 @@ public class UserController {
     @Operation(summary = "Получение данных пользователя")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+                    content = @Content(schema = @Schema(implementation = UserDetailedResponse.class))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public ResponseEntity<UserDetailedResponse> getAll(@PathVariable Long id) {
@@ -68,8 +69,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Блокировака пользователя")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Успешно"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public void block(@PathVariable Long id) {
@@ -80,7 +80,7 @@ public class UserController {
     @Operation(summary = "Получение данных авторизованного пользователя")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+                    content = @Content(schema = @Schema(implementation = UserDetailedResponse.class))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public ResponseEntity<UserDetailedResponse> getAuthenticatedUser() {
@@ -90,8 +90,7 @@ public class UserController {
     @PutMapping("/{id}")
     @Operation(summary = "Изменение данных пользователя")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Успешно"),
             @ApiResponse(responseCode = "400", description = "Ошибка валидации"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
@@ -105,7 +104,7 @@ public class UserController {
     @Operation(summary = "Получение пользователей по команде")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponse.class)))),
         })
     public List<UserResponse> getByTeam(@PathVariable Long teamId) {
         return userService.getByTeam(teamId);
@@ -115,8 +114,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMIN', 'TEAM_LEAD')")
     @Operation(summary = "Добавление пользователя в команду")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Успешно"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public void addToTeam(@PathVariable Long userId, @PathVariable Long teamId) {
@@ -127,8 +125,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMIN', 'TEAM_LEAD')")
     @Operation(summary = "Удаление пользователя из команды")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Успешно"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public void addToTeam(@PathVariable Long userId) {

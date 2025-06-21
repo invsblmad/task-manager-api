@@ -1,13 +1,13 @@
 package kg.inai.taskmanager.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kg.inai.taskmanager.models.auth.TokenResponse;
 import kg.inai.taskmanager.models.team.TeamRequest;
 import kg.inai.taskmanager.models.team.TeamResponse;
 import kg.inai.taskmanager.services.TeamService;
@@ -30,7 +30,7 @@ public class TeamController {
     @Operation(summary = "Получение списка активных команд")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TeamResponse.class)))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public ResponseEntity<List<TeamResponse>> getAllActive() {
@@ -42,7 +42,7 @@ public class TeamController {
     @Operation(summary = "Получение списка всех команд")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TeamResponse.class)))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public ResponseEntity<List<TeamResponse>> getAll() {
@@ -54,7 +54,7 @@ public class TeamController {
     @Operation(summary = "Создание команды")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+                    content = @Content(schema = @Schema(implementation = TeamResponse.class))),
             @ApiResponse(responseCode = "400", description = "Ошибка валидации"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
@@ -66,8 +66,7 @@ public class TeamController {
     @PreAuthorize("hasAnyRole('ADMIN', 'TEAM_LEAD')")
     @Operation(summary = "Изменение названия команды")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Успешно"),
             @ApiResponse(responseCode = "400", description = "Ошибка валидации"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
@@ -79,8 +78,7 @@ public class TeamController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Удаление команды")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(responseCode = "200", description = "Успешно"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public void delete(@PathVariable Long id) {
