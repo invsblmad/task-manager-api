@@ -19,7 +19,7 @@ public interface TaskMapper {
 
     @Mapping(target = "id", expression = "java(kg.inai.taskmanager.utils.TaskIdParsesUtil.format(task.getId()))")
     @Mapping(target = "assignedTo", expression = "java(userMapper.toShortDto(task.getAssignedTo(), minioService))")
-    TaskResponse toDto(Task task, @Context MinioService minioService, @Context UserMapper userMapper);
+    TaskResponse toDto(Task task, @Context UserMapper userMapper, @Context MinioService minioService);
 
     default EnumDto enumToDto(TaskPriority priority) {
         if (priority == null) return null;
@@ -32,11 +32,6 @@ public interface TaskMapper {
     }
 
     default EnumDto enumToDto(TaskStatus status) {
-        if (status == null) return null;
-        return new EnumDto(status.name(), status.getDescription());
-    }
-
-    default EnumDto enumToDto(UserStatus status) {
         if (status == null) return null;
         return new EnumDto(status.name(), status.getDescription());
     }
