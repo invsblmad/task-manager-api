@@ -1,6 +1,8 @@
 package kg.inai.taskmanager.entities;
 
 import jakarta.persistence.*;
+import kg.inai.taskmanager.enums.TaskPriority;
+import kg.inai.taskmanager.enums.TaskStatus;
 import kg.inai.taskmanager.enums.TaskType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +24,12 @@ public class Task extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private TaskType type;
 
+    @Enumerated(EnumType.STRING)
+    private TaskPriority priority;
+
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
+
     @ManyToOne
     @JoinColumn(name = "parent_task_id")
     private Task parentTask;
@@ -38,5 +46,13 @@ public class Task extends BaseEntity {
     @JoinColumn(name = "assigned_to")
     private User assignedTo;
 
-    //TODO: estimate task
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    private Team team;
+
+    @Column(nullable = false)
+    private Long estimateMinutes;
+
+    @Column(nullable = false)
+    private Long remainingMinutes;
 }

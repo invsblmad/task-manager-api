@@ -1,9 +1,6 @@
 package kg.inai.taskmanager.exceptions.handler;
 
-import kg.inai.taskmanager.exceptions.MinioException;
-import kg.inai.taskmanager.exceptions.NotFoundException;
-import kg.inai.taskmanager.exceptions.PasswordNotConfirmedException;
-import kg.inai.taskmanager.exceptions.UserAlreadyExistsException;
+import kg.inai.taskmanager.exceptions.*;
 import kg.inai.taskmanager.models.error.ErrorResponse;
 import kg.inai.taskmanager.models.error.ValidationErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -59,6 +56,13 @@ public class CustomExceptionHandler {
     public ResponseEntity<ErrorResponse> handle(MinioException e) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(TaskManagerException.class)
+    public ResponseEntity<ErrorResponse> handle(TaskManagerException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(e.getMessage()));
     }
 }

@@ -8,4 +8,6 @@ import java.util.List;
 public interface TaskService {
 
     List<EnumModel> getAllowedStatusTransitions(TaskStatus status);
+
+    void moveToStatus(Long id, TaskStatus status);
 }

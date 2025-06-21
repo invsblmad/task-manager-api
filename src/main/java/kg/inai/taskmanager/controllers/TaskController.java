@@ -1,6 +1,7 @@
 package kg.inai.taskmanager.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -8,14 +9,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kg.inai.taskmanager.enums.TaskStatus;
 import kg.inai.taskmanager.models.EnumModel;
-import kg.inai.taskmanager.models.auth.TokenResponse;
 import kg.inai.taskmanager.services.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,10 +28,20 @@ public class TaskController {
     @Operation(summary = "Получение статусов задачи, на которые можно перевести с текущего статуса")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
-            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = EnumModel.class)))),
     })
     public ResponseEntity<List<EnumModel>> getStatusTransitions(@PathVariable TaskStatus status) {
         return ResponseEntity.ok(taskService.getAllowedStatusTransitions(status));
+    }
+
+    @PutMapping("/{id}/to-status/{status}")
+    @Operation(summary = "Изменение статуса задачи")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно"),
+            @ApiResponse(responseCode = "400", description = "Переход на указанный статус невозможен"),
+            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+    })
+    public void moveToStatus(@PathVariable Long id, @PathVariable TaskStatus status) {
+        taskService.moveToStatus(id, status);
     }
 }

@@ -15,7 +15,7 @@ public enum TaskStatus {
     IN_ANALYSIS("В анализе"),
     IN_PROGRESS("В работе"),
     PAUSED("На паузе"),
-    WAITING_FOR_TESTING("В ожидании тестирования"),
+    WAITING_FOR_TESTING("Ожидание тестирования"),
     TESTING("На тестировании"),
     ON_REVIEW("На ревью"),
     TO_MERGE("Проверено"),
