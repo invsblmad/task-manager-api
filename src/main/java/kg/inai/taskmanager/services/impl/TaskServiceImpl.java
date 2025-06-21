@@ -1,13 +1,16 @@
 package kg.inai.taskmanager.services.impl;
 
+import kg.inai.taskmanager.dtos.EnumDto;
 import kg.inai.taskmanager.entities.Task;
 import kg.inai.taskmanager.enums.TaskStatus;
 import kg.inai.taskmanager.exceptions.NotFoundException;
 import kg.inai.taskmanager.exceptions.TaskManagerException;
-import kg.inai.taskmanager.models.EnumModel;
+import kg.inai.taskmanager.dtos.task.TaskResponse;
 import kg.inai.taskmanager.repositories.TaskRepository;
 import kg.inai.taskmanager.services.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +22,12 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
 
     @Override
-    public List<EnumModel> getAllowedStatusTransitions(TaskStatus status) {
+    public Page<TaskResponse> getAll(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public List<EnumDto> getAllowedStatusTransitions(TaskStatus status) {
         return TaskStatus.getAllowedTransitions(status).stream()
                 .map(TaskStatus::toModel)
                 .toList();

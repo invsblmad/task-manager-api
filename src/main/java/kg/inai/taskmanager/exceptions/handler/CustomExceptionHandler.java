@@ -1,8 +1,8 @@
 package kg.inai.taskmanager.exceptions.handler;
 
 import kg.inai.taskmanager.exceptions.*;
-import kg.inai.taskmanager.models.error.ErrorResponse;
-import kg.inai.taskmanager.models.error.ValidationErrorResponse;
+import kg.inai.taskmanager.dtos.error.ErrorResponse;
+import kg.inai.taskmanager.dtos.error.ValidationErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -45,8 +45,8 @@ public class CustomExceptionHandler {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handle(UserAlreadyExistsException e) {
+    @ExceptionHandler(AlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handle(AlreadyExistsException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(e.getMessage()));

@@ -1,7 +1,7 @@
 package kg.inai.taskmanager.services;
 
-import kg.inai.taskmanager.models.team.TeamRequest;
-import kg.inai.taskmanager.models.team.TeamResponse;
+import kg.inai.taskmanager.dtos.team.TeamRequest;
+import kg.inai.taskmanager.dtos.team.TeamResponse;
 
 import java.util.List;
 

@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kg.inai.taskmanager.models.auth.TokenResponse;
+import kg.inai.taskmanager.dtos.auth.TokenResponse;
 import kg.inai.taskmanager.security.jwt.JwtTokenService;
 import kg.inai.taskmanager.services.AuthService;
 import lombok.RequiredArgsConstructor;

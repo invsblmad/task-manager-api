@@ -1,6 +1,6 @@
 package kg.inai.taskmanager.enums;
 
-import kg.inai.taskmanager.models.EnumModel;
+import kg.inai.taskmanager.dtos.EnumDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -46,7 +46,7 @@ public enum TaskStatus {
         return TRANSITIONS.getOrDefault(status, Set.of());
     }
 
-    public static EnumModel toModel(TaskStatus status) {
-        return new EnumModel(status.name(), status.getDescription());
+    public static EnumDto toModel(TaskStatus status) {
+        return new EnumDto(status.name(), status.getDescription());
     }
 }

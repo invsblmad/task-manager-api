@@ -1,9 +1,9 @@
-package kg.inai.taskmanager.models.tasks;
+package kg.inai.taskmanager.dtos.task;
 
 import kg.inai.taskmanager.enums.TaskPriority;
 import kg.inai.taskmanager.enums.TaskStatus;
 import kg.inai.taskmanager.enums.TaskType;
-import kg.inai.taskmanager.models.user.UserResponse;
+import kg.inai.taskmanager.dtos.user.UserResponse;
 
 public record TaskResponse(Long id,
                            String code,

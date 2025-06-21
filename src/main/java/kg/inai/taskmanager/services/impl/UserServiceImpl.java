@@ -4,12 +4,11 @@ import kg.inai.taskmanager.entities.Team;
 import kg.inai.taskmanager.entities.User;
 import kg.inai.taskmanager.enums.FileType;
 import kg.inai.taskmanager.enums.UserStatus;
-import kg.inai.taskmanager.exceptions.MinioException;
 import kg.inai.taskmanager.exceptions.NotFoundException;
 import kg.inai.taskmanager.mappers.UserMapper;
-import kg.inai.taskmanager.models.user.UserDetailedResponse;
-import kg.inai.taskmanager.models.user.UserResponse;
-import kg.inai.taskmanager.models.user.UserUpdateRequest;
+import kg.inai.taskmanager.dtos.user.UserDetailedResponse;
+import kg.inai.taskmanager.dtos.user.UserResponse;
+import kg.inai.taskmanager.dtos.user.UserUpdateRequest;
 import kg.inai.taskmanager.repositories.TeamRepository;
 import kg.inai.taskmanager.repositories.UserRepository;
 import kg.inai.taskmanager.services.AuthService;
@@ -38,13 +37,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<UserResponse> getAll(Pageable pageable) {
         return userRepository.findAll(pageable)
-                .map(user -> userMapper.toModel(user, minioService));
+                .map(user -> userMapper.toDto(user, minioService));
     }
 
     @Override
     public List<UserResponse> getAllActive() {
         return userRepository.findAllByStatus(UserStatus.ACTIVE).stream()
-                .map(user -> userMapper.toModel(user, minioService))
+                .map(user -> userMapper.toDto(user, minioService))
                 .toList();
     }
 
@@ -53,12 +52,12 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
-        return userMapper.toDetailedModel(user, minioService);
+        return userMapper.toDetailedDto(user, minioService);
     }
 
     @Override
     public UserDetailedResponse getAuthenticatedUser() {
-        return userMapper.toDetailedModel(authService.getAuthenticatedUser(), minioService);
+        return userMapper.toDetailedDto(authService.getAuthenticatedUser(), minioService);
     }
 
     @Override
@@ -78,7 +77,11 @@ public class UserServiceImpl implements UserService {
         user = userMapper.toUpdatedEntity(request, user);
 
         if (avatar != null && !avatar.isEmpty()) {
-            updateAvatar(user, avatar);
+            String avatarPath = minioService.save(
+                    avatar,
+                    user.getAvatarPath(),
+                    FileType.AVATAR.getPath());
+            user.setAvatarPath(avatarPath);
         }
         userRepository.save(user);
     }
@@ -89,7 +92,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("Команда не найдена"));
 
         return team.getUsers().stream()
-                .map(user -> userMapper.toModel(user, minioService))
+                .map(user -> userMapper.toDto(user, minioService))
                 .toList();
     }
 
@@ -112,18 +115,5 @@ public class UserServiceImpl implements UserService {
 
         user.setTeam(null);
         userRepository.save(user);
-    }
-
-    private void updateAvatar(User user, MultipartFile avatar) {
-        String oldAvatarPath = user.getAvatarPath();
-        if (oldAvatarPath != null) {
-            try {
-                minioService.deleteFile(oldAvatarPath);
-            } catch (MinioException e) {
-                log.warn("Не удалось удалить старый аватар {}, причина: {}", oldAvatarPath, e.getMessage());
-            }
-        }
-        String avatarPath = minioService.uploadFile(avatar, FileType.AVATAR.getPath());
-        user.setAvatarPath(avatarPath);
     }
 }

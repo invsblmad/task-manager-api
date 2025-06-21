@@ -1,6 +1,6 @@
-package kg.inai.taskmanager.models.user;
+package kg.inai.taskmanager.dtos.user;
 
-import kg.inai.taskmanager.models.team.TeamResponse;
+import kg.inai.taskmanager.dtos.team.TeamResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

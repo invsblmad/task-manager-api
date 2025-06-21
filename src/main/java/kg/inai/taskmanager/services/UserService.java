@@ -1,8 +1,8 @@
 package kg.inai.taskmanager.services;
 
-import kg.inai.taskmanager.models.user.UserDetailedResponse;
-import kg.inai.taskmanager.models.user.UserResponse;
-import kg.inai.taskmanager.models.user.UserUpdateRequest;
+import kg.inai.taskmanager.dtos.user.UserDetailedResponse;
+import kg.inai.taskmanager.dtos.user.UserResponse;
+import kg.inai.taskmanager.dtos.user.UserUpdateRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;

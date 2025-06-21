@@ -1,4 +1,4 @@
-package kg.inai.taskmanager.models.team;
+package kg.inai.taskmanager.dtos.team;
 
 public record TeamResponse(Long id,
                            String name,

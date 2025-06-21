@@ -1,4 +1,4 @@
-package kg.inai.taskmanager.models.team;
+package kg.inai.taskmanager.dtos.team;
 
 import jakarta.validation.constraints.NotBlank;
 

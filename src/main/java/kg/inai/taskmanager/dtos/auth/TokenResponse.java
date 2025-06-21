@@ -1,4 +1,4 @@
-package kg.inai.taskmanager.models.auth;
+package kg.inai.taskmanager.dtos.auth;
 
 public record TokenResponse(String accessToken,
                             String refreshToken) {

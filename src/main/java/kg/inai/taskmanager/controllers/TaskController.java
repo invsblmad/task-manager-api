@@ -7,10 +7,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import kg.inai.taskmanager.dtos.EnumDto;
 import kg.inai.taskmanager.enums.TaskStatus;
-import kg.inai.taskmanager.models.EnumModel;
+import kg.inai.taskmanager.dtos.task.TaskResponse;
 import kg.inai.taskmanager.services.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,9 +31,9 @@ public class TaskController {
     @Operation(summary = "Получение статусов задачи, на которые можно перевести с текущего статуса")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = EnumModel.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = EnumDto.class)))),
     })
-    public ResponseEntity<List<EnumModel>> getStatusTransitions(@PathVariable TaskStatus status) {
+    public ResponseEntity<List<EnumDto>> getStatusTransitions(@PathVariable TaskStatus status) {
         return ResponseEntity.ok(taskService.getAllowedStatusTransitions(status));
     }
 
@@ -44,4 +47,11 @@ public class TaskController {
     public void moveToStatus(@PathVariable Long id, @PathVariable TaskStatus status) {
         taskService.moveToStatus(id, status);
     }
+
+    @GetMapping
+    @Operation(summary = "Получение всех задач с пагинацией")
+    public ResponseEntity<Page<TaskResponse>> getAll(Pageable pageable) {
+        return ResponseEntity.ok(taskService.getAll(pageable));
+    }
+
 }

@@ -1,4 +1,4 @@
-package kg.inai.taskmanager.models.error;
+package kg.inai.taskmanager.dtos.error;
 
 public record ErrorResponse(String message) {
 }

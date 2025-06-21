@@ -1,6 +1,6 @@
 package kg.inai.taskmanager.security.impl;
 
-import kg.inai.taskmanager.models.auth.TokenResponse;
+import kg.inai.taskmanager.dtos.auth.TokenResponse;
 import kg.inai.taskmanager.security.jwt.JwtTokenGenerator;
 import kg.inai.taskmanager.security.jwt.JwtTokenService;
 import lombok.RequiredArgsConstructor;

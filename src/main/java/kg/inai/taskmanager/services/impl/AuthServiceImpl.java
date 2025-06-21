@@ -2,11 +2,11 @@ package kg.inai.taskmanager.services.impl;
 
 import kg.inai.taskmanager.entities.User;
 import kg.inai.taskmanager.exceptions.PasswordNotConfirmedException;
-import kg.inai.taskmanager.exceptions.UserAlreadyExistsException;
+import kg.inai.taskmanager.exceptions.AlreadyExistsException;
 import kg.inai.taskmanager.mappers.UserMapper;
-import kg.inai.taskmanager.models.auth.SignInRequest;
-import kg.inai.taskmanager.models.auth.SignUpRequest;
-import kg.inai.taskmanager.models.auth.TokenResponse;
+import kg.inai.taskmanager.dtos.auth.SignInRequest;
+import kg.inai.taskmanager.dtos.auth.SignUpRequest;
+import kg.inai.taskmanager.dtos.auth.TokenResponse;
 import kg.inai.taskmanager.repositories.UserRepository;
 import kg.inai.taskmanager.security.jwt.JwtTokenService;
 import kg.inai.taskmanager.services.AuthService;
@@ -57,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             user = userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
-            throw new UserAlreadyExistsException("Пользователь с таким именем уже существует");
+            throw new AlreadyExistsException("Пользователь с таким именем уже существует");
         }
         return jwtTokenService.generateTokens(user);
     }
