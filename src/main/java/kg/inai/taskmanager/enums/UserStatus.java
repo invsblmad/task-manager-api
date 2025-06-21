@@ -10,5 +10,5 @@ public enum UserStatus {
     BLOCKED("Заблокированный"),
     ;
 
-    private final String value;
+    private final String description;
 }

@@ -1,6 +1,6 @@
 package kg.inai.taskmanager.dtos.user;
 
-import kg.inai.taskmanager.enums.UserStatus;
+import kg.inai.taskmanager.dtos.EnumDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,5 +18,5 @@ public class UserResponse {
     private String lastName;
     private String avatarUrl;
     private String role;
-    private UserStatus status;
+    private EnumDto status;
 }

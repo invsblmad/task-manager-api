@@ -8,6 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -15,7 +19,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "tasks")
-public class Task extends BaseEntity {
+public class Task {
+
+    @EmbeddedId
+    private TaskId id;
 
     private String title;
 
@@ -31,7 +38,10 @@ public class Task extends BaseEntity {
     private TaskStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "parent_task_id")
+    @JoinColumns({
+            @JoinColumn(name = "parent_project_code", referencedColumnName = "projectCode"),
+            @JoinColumn(name = "parent_sequence_number", referencedColumnName = "sequenceNumber")
+    })
     private Task parentTask;
 
     @ManyToOne
@@ -55,4 +65,10 @@ public class Task extends BaseEntity {
 
     @Column(nullable = false)
     private Long remainingMinutes;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }
