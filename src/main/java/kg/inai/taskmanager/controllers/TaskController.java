@@ -125,6 +125,12 @@ public class TaskController {
     }
 
     @PostMapping("/sub-tasks/for/{parentTaskId}")
+    @Operation(summary = "Сохранение сгенерированных подзадач")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно"),
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации"),
+            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+    })
     public void saveSubtasks(@PathVariable String parentTaskId,
                              @Valid @RequestBody List<SubtaskCreateRequestDto> subtasks) {
         taskService.saveSubtasks(parentTaskId, subtasks);
