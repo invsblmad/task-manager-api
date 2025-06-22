@@ -1,19 +1,19 @@
 package kg.inai.taskmanager.services;
 
-import kg.inai.taskmanager.dtos.team.TeamRequest;
-import kg.inai.taskmanager.dtos.team.TeamResponse;
+import kg.inai.taskmanager.dtos.team.TeamRequestDto;
+import kg.inai.taskmanager.dtos.team.TeamResponseDto;
 
 import java.util.List;
 
 public interface TeamService {
 
-    List<TeamResponse> getAll();
+    List<TeamResponseDto> getAll();
 
-    List<TeamResponse> getAllActive();
+    List<TeamResponseDto> getAllActive();
 
-    TeamResponse save(TeamRequest teamRequest);
+    TeamResponseDto save(TeamRequestDto teamRequest);
 
-    void update(Long id, TeamRequest teamRequest);
+    void update(Long id, TeamRequestDto teamRequest);
 
     void delete(Long id);
 }

@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum TaskType {
 
     TASK("Задача"),
+    SUBTASK("Подзадача"),
     BUG("Ошибка"),
     ;
 

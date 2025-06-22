@@ -1,6 +1,6 @@
 package kg.inai.taskmanager.security.impl;
 
-import kg.inai.taskmanager.dtos.auth.TokenResponse;
+import kg.inai.taskmanager.dtos.auth.TokenResponseDto;
 import kg.inai.taskmanager.security.jwt.JwtTokenGenerator;
 import kg.inai.taskmanager.security.jwt.JwtTokenService;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +21,9 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     private int refreshTokenExpirationHours;
 
     @Override
-    public TokenResponse generateTokens(UserDetails userDetails) {
+    public TokenResponseDto generateTokens(UserDetails userDetails) {
         String accessToken = jwtTokenGenerator.generateToken(userDetails, accessTokenExpirationHours);
         String refreshToken = jwtTokenGenerator.generateToken(userDetails, refreshTokenExpirationHours);
-        return new TokenResponse(accessToken, refreshToken);
+        return new TokenResponseDto(accessToken, refreshToken);
     }
 }

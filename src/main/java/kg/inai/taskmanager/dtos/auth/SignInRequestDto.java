@@ -2,7 +2,7 @@ package kg.inai.taskmanager.dtos.auth;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record SignInRequest(
+public record SignInRequestDto(
         @NotBlank(message = "Почта не может быть пустой")
         String email,
 

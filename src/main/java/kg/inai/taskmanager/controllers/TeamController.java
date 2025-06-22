@@ -8,8 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kg.inai.taskmanager.dtos.team.TeamRequest;
-import kg.inai.taskmanager.dtos.team.TeamResponse;
+import kg.inai.taskmanager.dtos.team.TeamRequestDto;
+import kg.inai.taskmanager.dtos.team.TeamResponseDto;
 import kg.inai.taskmanager.services.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +30,10 @@ public class TeamController {
     @Operation(summary = "Получение списка активных команд")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TeamResponse.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TeamResponseDto.class)))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<List<TeamResponse>> getAllActive() {
+    public ResponseEntity<List<TeamResponseDto>> getAllActive() {
         return ResponseEntity.ok(teamService.getAllActive());
     }
 
@@ -42,10 +42,10 @@ public class TeamController {
     @Operation(summary = "Получение списка всех команд")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TeamResponse.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TeamResponseDto.class)))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<List<TeamResponse>> getAll() {
+    public ResponseEntity<List<TeamResponseDto>> getAll() {
         return ResponseEntity.ok(teamService.getAll());
     }
 
@@ -54,11 +54,11 @@ public class TeamController {
     @Operation(summary = "Создание команды")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TeamResponse.class))),
+                    content = @Content(schema = @Schema(implementation = TeamResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "Ошибка валидации"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<TeamResponse> save(@Valid @RequestBody TeamRequest teamRequest) {
+    public ResponseEntity<TeamResponseDto> save(@Valid @RequestBody TeamRequestDto teamRequest) {
         return ResponseEntity.ok(teamService.save(teamRequest));
     }
 
@@ -70,7 +70,7 @@ public class TeamController {
             @ApiResponse(responseCode = "400", description = "Ошибка валидации"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public void update(@PathVariable Long id, @Valid @RequestBody TeamRequest teamRequest) {
+    public void update(@PathVariable Long id, @Valid @RequestBody TeamRequestDto teamRequest) {
         teamService.update(id, teamRequest);
     }
 

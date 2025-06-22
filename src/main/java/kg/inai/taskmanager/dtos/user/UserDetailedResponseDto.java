@@ -1,6 +1,6 @@
 package kg.inai.taskmanager.dtos.user;
 
-import kg.inai.taskmanager.dtos.team.TeamResponse;
+import kg.inai.taskmanager.dtos.team.TeamResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,10 +10,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDetailedResponse extends UserResponse {
+public class UserDetailedResponseDto extends UserResponseDto {
 
     private String phoneNumber;
     private String jobTitle;
     private String department;
-    private TeamResponse team;
+    private TeamResponseDto team;
 }

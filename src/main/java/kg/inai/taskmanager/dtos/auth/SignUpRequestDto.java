@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import kg.inai.taskmanager.enums.Role;
 
-public record SignUpRequest(
+public record SignUpRequestDto(
         @NotBlank(message = "Имя не должно быть пустым")
         String firstName,
 

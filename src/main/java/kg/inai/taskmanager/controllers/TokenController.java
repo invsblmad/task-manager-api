@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import kg.inai.taskmanager.dtos.auth.TokenResponse;
+import kg.inai.taskmanager.dtos.auth.TokenResponseDto;
 import kg.inai.taskmanager.security.jwt.JwtTokenService;
 import kg.inai.taskmanager.services.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +28,10 @@ public class TokenController {
     @Operation(summary = "Обновление пары access/refresh токенов")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = TokenResponse.class))),
+                    content = @Content(schema = @Schema(implementation = TokenResponseDto.class))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<TokenResponse> refresh() {
+    public ResponseEntity<TokenResponseDto> refresh() {
         return ResponseEntity.ok(jwtTokenService.generateTokens(authService.getAuthenticatedUser()));
     }
 }

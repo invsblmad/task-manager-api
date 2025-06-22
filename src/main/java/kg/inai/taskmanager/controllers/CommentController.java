@@ -8,8 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kg.inai.taskmanager.dtos.comment.CommentRequest;
-import kg.inai.taskmanager.dtos.comment.CommentResponse;
+import kg.inai.taskmanager.dtos.comment.CommentRequestDto;
+import kg.inai.taskmanager.dtos.comment.CommentResponseDto;
 import kg.inai.taskmanager.services.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +30,10 @@ public class CommentController {
     @Operation(summary = "Получение активных комментариев задачи")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CommentResponse.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CommentResponseDto.class)))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<List<CommentResponse>> getAllActive(@PathVariable String taskId) {
+    public ResponseEntity<List<CommentResponseDto>> getAllActive(@PathVariable String taskId) {
         return ResponseEntity.ok(commentService.getAllActive(taskId));
     }
 
@@ -42,10 +42,10 @@ public class CommentController {
     @Operation(summary = "Получение всех комментариев задачи")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CommentResponse.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CommentResponseDto.class)))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<List<CommentResponse>> getAll(@PathVariable String taskId) {
+    public ResponseEntity<List<CommentResponseDto>> getAll(@PathVariable String taskId) {
         return ResponseEntity.ok(commentService.getAll(taskId));
     }
 
@@ -53,10 +53,10 @@ public class CommentController {
     @Operation(summary = "Получение комментария")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = CommentResponse.class))),
+                    content = @Content(schema = @Schema(implementation = CommentResponseDto.class))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<CommentResponse> getById(@PathVariable Long id) {
+    public ResponseEntity<CommentResponseDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(commentService.getById(id));
     }
 
@@ -64,12 +64,12 @@ public class CommentController {
     @Operation(summary = "Создание комментария")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = CommentResponse.class))),
+                    content = @Content(schema = @Schema(implementation = CommentResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "Ошибка валидации"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<CommentResponse> save(@PathVariable String taskId,
-                                                @Valid @RequestBody CommentRequest commentRequest) {
+    public ResponseEntity<CommentResponseDto> save(@PathVariable String taskId,
+                                                   @Valid @RequestBody CommentRequestDto commentRequest) {
         return ResponseEntity.ok(commentService.save(taskId, commentRequest));
     }
 
@@ -80,7 +80,7 @@ public class CommentController {
             @ApiResponse(responseCode = "400", description = "Ошибка валидации"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public void update(@PathVariable Long id, @Valid @RequestBody CommentRequest commentRequest) {
+    public void update(@PathVariable Long id, @Valid @RequestBody CommentRequestDto commentRequest) {
         commentService.update(id, commentRequest);
     }
 

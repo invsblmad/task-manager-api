@@ -1,10 +1,10 @@
 package kg.inai.taskmanager.services.impl;
 
+import kg.inai.taskmanager.dtos.team.TeamRequestDto;
+import kg.inai.taskmanager.dtos.team.TeamResponseDto;
 import kg.inai.taskmanager.entities.Team;
 import kg.inai.taskmanager.exceptions.NotFoundException;
 import kg.inai.taskmanager.mappers.TeamMapper;
-import kg.inai.taskmanager.dtos.team.TeamRequest;
-import kg.inai.taskmanager.dtos.team.TeamResponse;
 import kg.inai.taskmanager.repositories.TeamRepository;
 import kg.inai.taskmanager.services.TeamService;
 import lombok.RequiredArgsConstructor;
@@ -20,28 +20,28 @@ public class TeamServiceImpl implements TeamService {
     private final TeamMapper teamMapper;
 
     @Override
-    public List<TeamResponse> getAll() {
+    public List<TeamResponseDto> getAll() {
         return teamRepository.findAll().stream()
                 .map(teamMapper::toDto)
                 .toList();
     }
 
     @Override
-    public List<TeamResponse> getAllActive() {
+    public List<TeamResponseDto> getAllActive() {
         return teamRepository.findAllByDeleted(false).stream()
                 .map(teamMapper::toDto)
                 .toList();
     }
 
     @Override
-    public TeamResponse save(TeamRequest teamRequest) {
+    public TeamResponseDto save(TeamRequestDto teamRequest) {
         Team team = teamMapper.toEntity(teamRequest);
         team = teamRepository.save(team);
         return teamMapper.toDto(team);
     }
 
     @Override
-    public void update(Long id, TeamRequest teamRequest) {
+    public void update(Long id, TeamRequestDto teamRequest) {
         Team team = teamRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Команда не найдена"));
 

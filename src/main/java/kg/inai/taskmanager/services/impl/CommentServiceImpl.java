@@ -1,7 +1,7 @@
 package kg.inai.taskmanager.services.impl;
 
-import kg.inai.taskmanager.dtos.comment.CommentRequest;
-import kg.inai.taskmanager.dtos.comment.CommentResponse;
+import kg.inai.taskmanager.dtos.comment.CommentRequestDto;
+import kg.inai.taskmanager.dtos.comment.CommentResponseDto;
 import kg.inai.taskmanager.entities.Comment;
 import kg.inai.taskmanager.entities.Task;
 import kg.inai.taskmanager.enums.CommentStatus;
@@ -27,7 +27,7 @@ public class CommentServiceImpl implements CommentService {
     private final AuthService authService;
 
     @Override
-    public List<CommentResponse> getAll(String taskId) {
+    public List<CommentResponseDto> getAll(String taskId) {
         Task task = taskRepository.findById(TaskIdParsesUtil.parse(taskId))
                 .orElseThrow(() -> new NotFoundException("Задача не найдена"));
 
@@ -37,7 +37,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<CommentResponse> getAllActive(String taskId) {
+    public List<CommentResponseDto> getAllActive(String taskId) {
         Task task = taskRepository.findById(TaskIdParsesUtil.parse(taskId))
                 .orElseThrow(() -> new NotFoundException("Задача не найдена"));
 
@@ -47,7 +47,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponse getById(Long id) {
+    public CommentResponseDto getById(Long id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Комментарий не найден"));
 
@@ -55,7 +55,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponse save(String taskId, CommentRequest request) {
+    public CommentResponseDto save(String taskId, CommentRequestDto request) {
         Task task = taskRepository.findById(TaskIdParsesUtil.parse(taskId))
                 .orElseThrow(() -> new NotFoundException("Задача не найдена"));
 
@@ -69,7 +69,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void update(Long id, CommentRequest commentRequest) {
+    public void update(Long id, CommentRequestDto commentRequest) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Комментарий не найден"));
 

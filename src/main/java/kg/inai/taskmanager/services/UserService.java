@@ -1,8 +1,8 @@
 package kg.inai.taskmanager.services;
 
-import kg.inai.taskmanager.dtos.user.UserDetailedResponse;
-import kg.inai.taskmanager.dtos.user.UserResponse;
-import kg.inai.taskmanager.dtos.user.UserUpdateRequest;
+import kg.inai.taskmanager.dtos.user.UserDetailedResponseDto;
+import kg.inai.taskmanager.dtos.user.UserResponseDto;
+import kg.inai.taskmanager.dtos.user.UserUpdateRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,19 +10,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface UserService {
-    Page<UserResponse> getAll(Pageable pageable);
+    Page<UserResponseDto> getAll(Pageable pageable);
 
-    List<UserResponse> getAllActive();
+    List<UserResponseDto> getAllActive();
 
-    UserDetailedResponse getById(Long id);
+    UserDetailedResponseDto getById(Long id);
 
-    UserDetailedResponse getAuthenticatedUser();
+    UserDetailedResponseDto getAuthenticatedUser();
 
     void block(Long id);
 
-    void update(Long id, UserUpdateRequest request, MultipartFile avatar);
+    void update(Long id, UserUpdateRequestDto request, MultipartFile avatar);
 
-    List<UserResponse> getByTeam(Long teamId);
+    List<UserResponseDto> getByTeam(Long teamId);
 
     void addToTeam(Long userId, Long teamId);
 

@@ -2,7 +2,7 @@ package kg.inai.taskmanager.dtos.user;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record UserUpdateRequest(
+public record UserUpdateRequestDto(
         @NotBlank(message = "Имя не должно быть пустым")
         String firstName,
 

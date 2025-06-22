@@ -7,20 +7,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import kg.inai.taskmanager.dtos.EnumDto;
-import kg.inai.taskmanager.dtos.task.TaskGroupResponse;
-import kg.inai.taskmanager.dtos.task.TaskStatusResponse;
+import kg.inai.taskmanager.dtos.task.TaskRequestDto;
+import kg.inai.taskmanager.dtos.task.TaskDetailedResponseDto;
+import kg.inai.taskmanager.dtos.task.TaskGroupResponseDto;
 import kg.inai.taskmanager.enums.TaskStatus;
-import kg.inai.taskmanager.dtos.task.TaskResponse;
+import kg.inai.taskmanager.services.MinioService;
 import kg.inai.taskmanager.services.TaskService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
@@ -29,6 +29,7 @@ import java.util.Map;
 public class TaskController {
 
     private final TaskService taskService;
+    private final MinioService minioService;
 
     @GetMapping("/statuses/{status}/transitions")
     @Operation(summary = "Получение статусов задачи, на которые можно перевести с текущего статуса")
@@ -55,12 +56,43 @@ public class TaskController {
     @Operation(summary = "Получение всех задач проекта, отсортированных по статусам Backlog, В процессе, Готово")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TaskGroupResponse.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TaskGroupResponseDto.class)))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<List<TaskGroupResponse> > getAll(@PathVariable String projectCode,
-                                                           @RequestParam(required = false) boolean filterByCurrentUser) {
+    public ResponseEntity<List<TaskGroupResponseDto> > getAll(@PathVariable String projectCode,
+                                                              @RequestParam(required = false) boolean filterByCurrentUser) {
         return ResponseEntity.ok(taskService.getAll(projectCode, filterByCurrentUser));
     }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Получение данных задачи")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно",
+                    content = @Content(schema = @Schema(implementation = TaskDetailedResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "Неверный запрос"),
+            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+    })
+    public ResponseEntity<TaskDetailedResponseDto> getById(@PathVariable String id) {
+        return ResponseEntity.ok(taskService.getById(id));
+    }
+
+    @PostMapping
+    @Operation(summary = "Создание задачи")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно",
+                    content = @Content(schema = @Schema(implementation = TaskDetailedResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации"),
+            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+    })
+    public ResponseEntity<TaskDetailedResponseDto> save(@RequestPart("data") @Valid TaskRequestDto request,
+                                                        @RequestPart("files") List<MultipartFile> files) {
+        return ResponseEntity.ok(taskService.save(request, files));
+    }
+
+    @GetMapping("/test")
+    public String test() {
+        return minioService.getDownloadUrl("project-images/2025/06/22/88834ff5-858a-4faa-bba5-4bc6b8298d2b.png", "image/png", "crm.png");
+    }
+
 
 }

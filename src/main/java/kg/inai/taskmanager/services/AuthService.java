@@ -1,12 +1,12 @@
 package kg.inai.taskmanager.services;
 
 import kg.inai.taskmanager.entities.User;
-import kg.inai.taskmanager.dtos.auth.SignInRequest;
-import kg.inai.taskmanager.dtos.auth.SignUpRequest;
-import kg.inai.taskmanager.dtos.auth.TokenResponse;
+import kg.inai.taskmanager.dtos.auth.SignInRequestDto;
+import kg.inai.taskmanager.dtos.auth.SignUpRequestDto;
+import kg.inai.taskmanager.dtos.auth.TokenResponseDto;
 
 public interface AuthService {
-    TokenResponse signIn(SignInRequest signInRequest);
-    TokenResponse signUp(SignUpRequest signUpRequest);
+    TokenResponseDto signIn(SignInRequestDto signInRequest);
+    TokenResponseDto signUp(SignUpRequestDto signUpRequest);
     User getAuthenticatedUser();
 }

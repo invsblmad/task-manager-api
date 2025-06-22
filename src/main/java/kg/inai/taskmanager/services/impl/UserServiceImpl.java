@@ -1,14 +1,14 @@
 package kg.inai.taskmanager.services.impl;
 
+import kg.inai.taskmanager.dtos.user.UserDetailedResponseDto;
+import kg.inai.taskmanager.dtos.user.UserResponseDto;
+import kg.inai.taskmanager.dtos.user.UserUpdateRequestDto;
 import kg.inai.taskmanager.entities.Team;
 import kg.inai.taskmanager.entities.User;
 import kg.inai.taskmanager.enums.FileType;
 import kg.inai.taskmanager.enums.UserStatus;
 import kg.inai.taskmanager.exceptions.NotFoundException;
 import kg.inai.taskmanager.mappers.UserMapper;
-import kg.inai.taskmanager.dtos.user.UserDetailedResponse;
-import kg.inai.taskmanager.dtos.user.UserResponse;
-import kg.inai.taskmanager.dtos.user.UserUpdateRequest;
 import kg.inai.taskmanager.repositories.TeamRepository;
 import kg.inai.taskmanager.repositories.UserRepository;
 import kg.inai.taskmanager.services.AuthService;
@@ -35,20 +35,20 @@ public class UserServiceImpl implements UserService {
     private final MinioService minioService;
 
     @Override
-    public Page<UserResponse> getAll(Pageable pageable) {
+    public Page<UserResponseDto> getAll(Pageable pageable) {
         return userRepository.findAll(pageable)
                 .map(user -> userMapper.toDto(user, minioService));
     }
 
     @Override
-    public List<UserResponse> getAllActive() {
+    public List<UserResponseDto> getAllActive() {
         return userRepository.findAllByStatus(UserStatus.ACTIVE).stream()
                 .map(user -> userMapper.toDto(user, minioService))
                 .toList();
     }
 
     @Override
-    public UserDetailedResponse getById(Long id) {
+    public UserDetailedResponseDto getById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetailedResponse getAuthenticatedUser() {
+    public UserDetailedResponseDto getAuthenticatedUser() {
         return userMapper.toDetailedDto(authService.getAuthenticatedUser(), minioService);
     }
 
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(Long id, UserUpdateRequest request, MultipartFile avatar) {
+    public void update(Long id, UserUpdateRequestDto request, MultipartFile avatar) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> getByTeam(Long teamId) {
+    public List<UserResponseDto> getByTeam(Long teamId) {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new NotFoundException("Команда не найдена"));
 

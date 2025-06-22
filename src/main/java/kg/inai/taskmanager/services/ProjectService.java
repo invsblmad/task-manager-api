@@ -1,8 +1,8 @@
 package kg.inai.taskmanager.services;
 
-import kg.inai.taskmanager.dtos.project.ProjectRequest;
-import kg.inai.taskmanager.dtos.project.ProjectResponse;
-import kg.inai.taskmanager.dtos.project.ProjectUpdateRequest;
+import kg.inai.taskmanager.dtos.project.ProjectRequestDto;
+import kg.inai.taskmanager.dtos.project.ProjectResponseDto;
+import kg.inai.taskmanager.dtos.project.ProjectUpdateRequestDto;
 import kg.inai.taskmanager.enums.ProjectStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,15 +12,15 @@ import java.util.List;
 
 public interface ProjectService {
 
-    Page<ProjectResponse> getAll(Pageable pageable);
+    Page<ProjectResponseDto> getAll(Pageable pageable);
 
-    List<ProjectResponse> getAllActive();
+    List<ProjectResponseDto> getAllActive();
 
-    ProjectResponse getByCode(String code);
+    ProjectResponseDto getByCode(String code);
 
-    ProjectResponse save(ProjectRequest request, MultipartFile image);
+    ProjectResponseDto save(ProjectRequestDto request, MultipartFile image);
 
-    void update(String code, ProjectUpdateRequest request, MultipartFile image);
+    void update(String code, ProjectUpdateRequestDto request, MultipartFile image);
 
     void updateStatus(String code, ProjectStatus status);
 }

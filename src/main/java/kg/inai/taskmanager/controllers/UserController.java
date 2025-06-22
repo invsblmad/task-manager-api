@@ -8,9 +8,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kg.inai.taskmanager.dtos.user.UserDetailedResponse;
-import kg.inai.taskmanager.dtos.user.UserResponse;
-import kg.inai.taskmanager.dtos.user.UserUpdateRequest;
+import kg.inai.taskmanager.dtos.user.UserDetailedResponseDto;
+import kg.inai.taskmanager.dtos.user.UserResponseDto;
+import kg.inai.taskmanager.dtos.user.UserUpdateRequestDto;
 import kg.inai.taskmanager.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,10 +35,10 @@ public class UserController {
     @Operation(summary = "Получение списка всех пользователей с пагинацией")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponse.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class)))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<Page<UserResponse>> getAll(Pageable pageable) {
+    public ResponseEntity<Page<UserResponseDto>> getAll(Pageable pageable) {
         return ResponseEntity.ok(userService.getAll(pageable));
     }
 
@@ -46,10 +46,10 @@ public class UserController {
     @Operation(summary = "Получение списка активных пользователей")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponse.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class)))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<List<UserResponse>> getAllActive() {
+    public ResponseEntity<List<UserResponseDto>> getAllActive() {
         return ResponseEntity.ok(userService.getAllActive());
     }
 
@@ -57,10 +57,10 @@ public class UserController {
     @Operation(summary = "Получение данных пользователя")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = UserDetailedResponse.class))),
+                    content = @Content(schema = @Schema(implementation = UserDetailedResponseDto.class))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<UserDetailedResponse> getAll(@PathVariable Long id) {
+    public ResponseEntity<UserDetailedResponseDto> getAll(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getById(id));
     }
 
@@ -79,10 +79,10 @@ public class UserController {
     @Operation(summary = "Получение данных авторизованного пользователя")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(schema = @Schema(implementation = UserDetailedResponse.class))),
+                    content = @Content(schema = @Schema(implementation = UserDetailedResponseDto.class))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<UserDetailedResponse> getAuthenticatedUser() {
+    public ResponseEntity<UserDetailedResponseDto> getAuthenticatedUser() {
         return ResponseEntity.ok(userService.getAuthenticatedUser());
     }
 
@@ -94,7 +94,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public void update(@PathVariable Long id,
-                       @RequestPart(name = "data") @Valid UserUpdateRequest request,
+                       @RequestPart(name = "data") @Valid UserUpdateRequestDto request,
                        @RequestPart(name = "file", required = false) MultipartFile avatar) {
         userService.update(id, request, avatar);
     }
@@ -103,9 +103,9 @@ public class UserController {
     @Operation(summary = "Получение пользователей по команде")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponse.class)))),
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class)))),
         })
-    public List<UserResponse> getByTeam(@PathVariable Long teamId) {
+    public List<UserResponseDto> getByTeam(@PathVariable Long teamId) {
         return userService.getByTeam(teamId);
     }
 

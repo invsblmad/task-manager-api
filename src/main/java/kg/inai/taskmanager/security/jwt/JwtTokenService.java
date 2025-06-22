@@ -1,8 +1,8 @@
 package kg.inai.taskmanager.security.jwt;
 
-import kg.inai.taskmanager.dtos.auth.TokenResponse;
+import kg.inai.taskmanager.dtos.auth.TokenResponseDto;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public interface JwtTokenService {
-    TokenResponse generateTokens(UserDetails userDetails);
+    TokenResponseDto generateTokens(UserDetails userDetails);
 }

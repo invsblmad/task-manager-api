@@ -1,14 +1,14 @@
 package kg.inai.taskmanager.services.impl;
 
-import kg.inai.taskmanager.dtos.project.ProjectUpdateRequest;
+import kg.inai.taskmanager.dtos.project.ProjectRequestDto;
+import kg.inai.taskmanager.dtos.project.ProjectResponseDto;
+import kg.inai.taskmanager.dtos.project.ProjectUpdateRequestDto;
 import kg.inai.taskmanager.entities.Project;
 import kg.inai.taskmanager.enums.FileType;
 import kg.inai.taskmanager.enums.ProjectStatus;
 import kg.inai.taskmanager.exceptions.AlreadyExistsException;
 import kg.inai.taskmanager.exceptions.NotFoundException;
 import kg.inai.taskmanager.mappers.ProjectMapper;
-import kg.inai.taskmanager.dtos.project.ProjectRequest;
-import kg.inai.taskmanager.dtos.project.ProjectResponse;
 import kg.inai.taskmanager.repositories.ProjectRepository;
 import kg.inai.taskmanager.services.MinioService;
 import kg.inai.taskmanager.services.ProjectService;
@@ -30,21 +30,21 @@ public class ProjectServiceImpl implements ProjectService {
     private final MinioService minioService;
 
     @Override
-    public Page<ProjectResponse> getAll(Pageable pageable) {
+    public Page<ProjectResponseDto> getAll(Pageable pageable) {
         return projectRepository.findAll(pageable)
                 .map(project -> projectMapper.toDto(project, minioService));
 
     }
 
     @Override
-    public List<ProjectResponse> getAllActive() {
+    public List<ProjectResponseDto> getAllActive() {
         return projectRepository.findAllByStatus(ProjectStatus.ACTIVE).stream()
                 .map(project -> projectMapper.toDto(project, minioService))
                 .toList();
     }
 
     @Override
-    public ProjectResponse getByCode(String code) {
+    public ProjectResponseDto getByCode(String code) {
         Project project = projectRepository.findByCode(code)
                 .orElseThrow(() -> new NotFoundException("Проект не найден"));
 
@@ -52,7 +52,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectResponse save(ProjectRequest request, MultipartFile image) {
+    public ProjectResponseDto save(ProjectRequestDto request, MultipartFile image) {
         Project project = projectMapper.toEntity(request);
         project.setStatus(ProjectStatus.ACTIVE);
 
@@ -73,7 +73,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void update(String code, ProjectUpdateRequest request, MultipartFile image) {
+    public void update(String code, ProjectUpdateRequestDto request, MultipartFile image) {
         Project project = projectRepository.findByCode(code)
                 .orElseThrow(() -> new NotFoundException("Проект не найден"));
 

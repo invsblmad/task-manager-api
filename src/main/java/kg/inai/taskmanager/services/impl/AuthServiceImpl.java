@@ -1,12 +1,12 @@
 package kg.inai.taskmanager.services.impl;
 
+import kg.inai.taskmanager.dtos.auth.SignUpRequestDto;
 import kg.inai.taskmanager.entities.User;
 import kg.inai.taskmanager.exceptions.PasswordNotConfirmedException;
 import kg.inai.taskmanager.exceptions.AlreadyExistsException;
 import kg.inai.taskmanager.mappers.UserMapper;
-import kg.inai.taskmanager.dtos.auth.SignInRequest;
-import kg.inai.taskmanager.dtos.auth.SignUpRequest;
-import kg.inai.taskmanager.dtos.auth.TokenResponse;
+import kg.inai.taskmanager.dtos.auth.SignInRequestDto;
+import kg.inai.taskmanager.dtos.auth.TokenResponseDto;
 import kg.inai.taskmanager.repositories.UserRepository;
 import kg.inai.taskmanager.security.jwt.JwtTokenService;
 import kg.inai.taskmanager.services.AuthService;
@@ -34,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
-    public TokenResponse signIn(SignInRequest signInRequest) {
+    public TokenResponseDto signIn(SignInRequestDto signInRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         signInRequest.email(),
@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public TokenResponse signUp(SignUpRequest signUpRequest) {
+    public TokenResponseDto signUp(SignUpRequestDto signUpRequest) {
         if (!signUpRequest.password().equals(signUpRequest.passwordConfirmation())) {
             throw new PasswordNotConfirmedException("Пароли не совпадают");
         }

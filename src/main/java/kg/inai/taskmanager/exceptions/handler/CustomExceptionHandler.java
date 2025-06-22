@@ -1,8 +1,8 @@
 package kg.inai.taskmanager.exceptions.handler;
 
 import kg.inai.taskmanager.exceptions.*;
-import kg.inai.taskmanager.dtos.error.ErrorResponse;
-import kg.inai.taskmanager.dtos.error.ValidationErrorResponse;
+import kg.inai.taskmanager.dtos.error.ErrorResponseDto;
+import kg.inai.taskmanager.dtos.error.ValidationErrorResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -17,14 +17,14 @@ import java.util.Map;
 public class CustomExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handle(NotFoundException e) {
+    public ResponseEntity<ErrorResponseDto> handle(NotFoundException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(e.getMessage()));
+                .body(new ErrorResponseDto(e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponse> handle(MethodArgumentNotValidException e) {
+    public ResponseEntity<ValidationErrorResponseDto> handle(MethodArgumentNotValidException e) {
         Map<String, String> errors = new HashMap<>();
 
         e.getBindingResult().getAllErrors().forEach((error) -> {
@@ -35,34 +35,34 @@ public class CustomExceptionHandler {
         });
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ValidationErrorResponse(errors));
+                .body(new ValidationErrorResponseDto(errors));
     }
 
     @ExceptionHandler(PasswordNotConfirmedException.class)
-    public ResponseEntity<ErrorResponse> handle(PasswordNotConfirmedException e) {
+    public ResponseEntity<ErrorResponseDto> handle(PasswordNotConfirmedException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(e.getMessage()));
+                .body(new ErrorResponseDto(e.getMessage()));
     }
 
     @ExceptionHandler(AlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handle(AlreadyExistsException e) {
+    public ResponseEntity<ErrorResponseDto> handle(AlreadyExistsException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(e.getMessage()));
+                .body(new ErrorResponseDto(e.getMessage()));
     }
 
     @ExceptionHandler(MinioException.class)
-    public ResponseEntity<ErrorResponse> handle(MinioException e) {
+    public ResponseEntity<ErrorResponseDto> handle(MinioException e) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(e.getMessage()));
+                .body(new ErrorResponseDto(e.getMessage()));
     }
 
     @ExceptionHandler(TaskManagerException.class)
-    public ResponseEntity<ErrorResponse> handle(TaskManagerException e) {
+    public ResponseEntity<ErrorResponseDto> handle(TaskManagerException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(e.getMessage()));
+                .body(new ErrorResponseDto(e.getMessage()));
     }
 }

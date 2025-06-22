@@ -1,8 +1,10 @@
 package kg.inai.taskmanager.services.impl;
 
+import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
+import io.minio.http.Method;
 import kg.inai.taskmanager.configs.properties.MinioProperties;
 import kg.inai.taskmanager.exceptions.MinioException;
 import kg.inai.taskmanager.services.MinioService;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -22,6 +25,8 @@ import java.util.UUID;
 public class MinioServiceImpl implements MinioService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+    private static final int URL_EXPIRATION_SECONDS = 3600;
+
     private final MinioClient client;
     private final MinioProperties properties;
 
@@ -32,6 +37,24 @@ public class MinioServiceImpl implements MinioService {
                 properties.getBucket(),
                 filePath.replaceAll("^/+", "")
         );
+    }
+
+    @Override
+    public String getDownloadUrl(String filePath, String contentType, String originalFileName) {
+        try {
+            return client.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
+                    .method(Method.GET)
+                    .bucket(properties.getBucket())
+                    .object(filePath)
+                    .extraQueryParams(Map.of(
+                            "response-content-type", contentType,
+                            "response-content-disposition", "attachment; filename=\"" + originalFileName + "\""
+                    ))
+                    .expiry(URL_EXPIRATION_SECONDS)
+                    .build());
+        } catch (Exception e) {
+            throw new MinioException(String.format("Не удалось получить файл, ошибка: %s", e.getMessage()));
+        }
     }
 
     @Override
