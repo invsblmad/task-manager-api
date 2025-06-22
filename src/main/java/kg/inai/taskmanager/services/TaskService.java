@@ -17,6 +17,8 @@ public interface TaskService {
 
     TaskDetailedResponseDto save(TaskRequestDto request, List<MultipartFile> files);
 
+    TaskDetailedResponseDto saveSubtask(String parentTaskId, TaskRequestDto request, List<MultipartFile> files);
+
     List<EnumDto> getAllowedStatusTransitions(TaskStatus status);
 
     void moveToStatus(String id, TaskStatus status);

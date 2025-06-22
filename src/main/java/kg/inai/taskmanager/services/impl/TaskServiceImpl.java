@@ -66,32 +66,18 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDetailedResponseDto save(TaskRequestDto request, List<MultipartFile> files) {
-        Project project = projectRepository.findByCode(request.projectCode())
-                .orElseThrow(() -> new NotFoundException("Пррект не найден"));
+        Task task = createTask(null, request, files);
 
-        Task task = taskMapper.toEntity(request);
-        task.setProject(project);
-        task.setId(generateTaskId(project.getCode()));
-        task.setStatus(TaskStatus.BACKLOG);
+        TaskTimeProgressDto progress = buildProgress(
+                task.getEstimateMinutes(),
+                task.getRemainingMinutes());
 
-        User user = userRepository.findById(request.assignedUserId())
-                .orElseThrow(() -> new NotFoundException("Не найден исполнитель задачи"));
+        return taskMapper.toDetailedDto(task, progress, userMapper, projectMapper, minioService);
+    }
 
-        task.setAssignedTo(user);
-        task.setCreatedBy(authService.getAuthenticatedUser());
-
-        if (!StringUtils.isBlank(request.estimate())) {
-            Long estimateMinutes = TimeParserUtil.parseToMinutes(request.estimate());
-            Long remainingMinutes = StringUtils.isBlank(request.remainingTime())
-                    ? estimateMinutes
-                    : TimeParserUtil.parseToMinutes(request.remainingTime());
-
-            task.setEstimateMinutes(estimateMinutes);
-            task.setRemainingMinutes(remainingMinutes);
-        }
-
-        task = taskRepository.save(task);
-        saveAttachments(task, files);
+    @Override
+    public TaskDetailedResponseDto saveSubtask(String parentTaskId, TaskRequestDto request, List<MultipartFile> files) {
+        Task task = createTask(parentTaskId, request, files);
 
         TaskTimeProgressDto progress = buildProgress(
                 task.getEstimateMinutes(),
@@ -143,6 +129,48 @@ public class TaskServiceImpl implements TaskService {
         return new TaskId(projectCode, newSeq);
     }
 
+    private Task createTask(String parentTaskId, TaskRequestDto request, List<MultipartFile> files) {
+        Project project = projectRepository.findByCode(request.projectCode())
+                .orElseThrow(() -> new NotFoundException("Пррект не найден"));
+
+        User user = userRepository.findById(request.assignedUserId())
+                .orElseThrow(() -> new NotFoundException("Не найден исполнитель задачи"));
+
+        Task parentTask = null;
+        if (!StringUtils.isBlank(parentTaskId)) {
+            parentTask = taskRepository.findById(TaskIdParsesUtil.parse(parentTaskId))
+                    .orElseThrow(() -> new NotFoundException("Главная задача не найдена"));
+        }
+
+        Task task = taskMapper.toEntity(request);
+        task.setProject(project);
+        task.setId(generateTaskId(project.getCode()));
+        task.setStatus(TaskStatus.BACKLOG);
+        task.setAssignedTo(user);
+        task.setCreatedBy(authService.getAuthenticatedUser());
+        task.setParentTask(parentTask);
+
+        applyEstimates(task, request);
+
+        task = taskRepository.save(task);
+        saveAttachments(task, files);
+        return task;
+    }
+
+    private void applyEstimates(Task task, TaskRequestDto request) {
+        if (StringUtils.isBlank(request.estimate())) {
+            return;
+        }
+
+        Long estimate = TimeParserUtil.parseToMinutes(request.estimate());
+        Long remaining = StringUtils.isBlank(request.remainingTime())
+                ? estimate
+                : TimeParserUtil.parseToMinutes(request.remainingTime());
+
+        task.setEstimateMinutes(estimate);
+        task.setRemainingMinutes(remaining);
+    }
+
     private void saveAttachments(Task task, List<MultipartFile> files) {
         if (files == null || files.isEmpty()) return;
 
@@ -161,7 +189,7 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-    public TaskTimeProgressDto buildProgress(long estimate, long remaining) {
+    private TaskTimeProgressDto buildProgress(long estimate, long remaining) {
         long spent = estimate - remaining;
 
         int spentPercent = (int) ((double) spent / estimate * 100);

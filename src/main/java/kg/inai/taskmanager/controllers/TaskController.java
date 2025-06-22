@@ -88,4 +88,18 @@ public class TaskController {
                                                         @RequestPart("files") List<MultipartFile> files) {
         return ResponseEntity.ok(taskService.save(request, files));
     }
+
+    @PostMapping("/sub-task/for/{parentTaskId}")
+    @Operation(summary = "Создание подзадачи для главной задачи")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно",
+                    content = @Content(schema = @Schema(implementation = TaskDetailedResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации"),
+            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+    })
+    public ResponseEntity<TaskDetailedResponseDto> saveSubtask(@PathVariable String parentTaskId,
+                                                               @RequestPart("data") @Valid TaskRequestDto request,
+                                                               @RequestPart("files") List<MultipartFile> files) {
+        return ResponseEntity.ok(taskService.saveSubtask(parentTaskId, request, files));
+    }
 }
