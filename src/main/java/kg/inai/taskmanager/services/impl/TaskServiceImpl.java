@@ -1,10 +1,7 @@
 package kg.inai.taskmanager.services.impl;
 
 import kg.inai.taskmanager.dtos.EnumDto;
-import kg.inai.taskmanager.dtos.task.TaskDetailedResponseDto;
-import kg.inai.taskmanager.dtos.task.TaskGroupResponseDto;
-import kg.inai.taskmanager.dtos.task.TaskRequestDto;
-import kg.inai.taskmanager.dtos.task.TaskResponseDto;
+import kg.inai.taskmanager.dtos.task.*;
 import kg.inai.taskmanager.entities.Project;
 import kg.inai.taskmanager.entities.Task;
 import kg.inai.taskmanager.entities.TaskId;
@@ -25,7 +22,7 @@ import kg.inai.taskmanager.services.AuthService;
 import kg.inai.taskmanager.services.MinioService;
 import kg.inai.taskmanager.services.TaskService;
 import kg.inai.taskmanager.utils.TaskIdParsesUtil;
-import kg.inai.taskmanager.utils.TimeEstimateUtil;
+import kg.inai.taskmanager.utils.TimeParserUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -60,7 +57,11 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(TaskIdParsesUtil.parse(id))
                 .orElseThrow(() -> new NotFoundException("Задача не найдена"));
 
-        return taskMapper.toDetailedDto(task, userMapper, projectMapper, minioService);
+        TaskTimeProgressDto progress = buildProgress(
+                task.getEstimateMinutes(),
+                task.getRemainingMinutes());
+
+        return taskMapper.toDetailedDto(task, progress, userMapper, projectMapper, minioService);
     }
 
     @Override
@@ -80,10 +81,10 @@ public class TaskServiceImpl implements TaskService {
         task.setCreatedBy(authService.getAuthenticatedUser());
 
         if (!StringUtils.isBlank(request.estimate())) {
-            Long estimateMinutes = TimeEstimateUtil.parseToMinutes(request.estimate());
+            Long estimateMinutes = TimeParserUtil.parseToMinutes(request.estimate());
             Long remainingMinutes = StringUtils.isBlank(request.remainingTime())
                     ? estimateMinutes
-                    : TimeEstimateUtil.parseToMinutes(request.remainingTime());
+                    : TimeParserUtil.parseToMinutes(request.remainingTime());
 
             task.setEstimateMinutes(estimateMinutes);
             task.setRemainingMinutes(remainingMinutes);
@@ -91,7 +92,12 @@ public class TaskServiceImpl implements TaskService {
 
         task = taskRepository.save(task);
         saveAttachments(task, files);
-        return taskMapper.toDetailedDto(task, userMapper, projectMapper, minioService);
+
+        TaskTimeProgressDto progress = buildProgress(
+                task.getEstimateMinutes(),
+                task.getRemainingMinutes());
+
+        return taskMapper.toDetailedDto(task, progress, userMapper, projectMapper, minioService);
     }
 
     @Override
@@ -153,5 +159,20 @@ public class TaskServiceImpl implements TaskService {
                     .user(authService.getAuthenticatedUser())
                     .build());
         }
+    }
+
+    public TaskTimeProgressDto buildProgress(long estimate, long remaining) {
+        long spent = estimate - remaining;
+
+        int spentPercent = (int) ((double) spent / estimate * 100);
+        int remainingPercent = 100 - spentPercent;
+
+        return TaskTimeProgressDto.builder()
+                .estimatedTime(TimeParserUtil.formatFromMinutes(estimate))
+                .spentTime(TimeParserUtil.formatFromMinutes(spent))
+                .remainingTime(TimeParserUtil.formatFromMinutes(remaining))
+                .spentPercent(spentPercent)
+                .remainingPercent(remainingPercent)
+                .build();
     }
 }

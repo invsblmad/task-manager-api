@@ -4,6 +4,7 @@ import kg.inai.taskmanager.dtos.EnumDto;
 import kg.inai.taskmanager.dtos.task.TaskDetailedResponseDto;
 import kg.inai.taskmanager.dtos.task.TaskRequestDto;
 import kg.inai.taskmanager.dtos.task.TaskResponseDto;
+import kg.inai.taskmanager.dtos.task.TaskTimeProgressDto;
 import kg.inai.taskmanager.entities.Task;
 import kg.inai.taskmanager.enums.ProjectStatus;
 import kg.inai.taskmanager.enums.TaskPriority;
@@ -27,7 +28,9 @@ public interface TaskMapper {
     @Mapping(target = "assignedTo", expression = "java(userMapper.toShortDto(task.getAssignedTo(), minioService))")
     @Mapping(target = "createdBy", expression = "java(userMapper.toShortDto(task.getCreatedBy(), minioService))")
     @Mapping(target = "project", expression = "java(projectMapper.toDto(task.getProject(), minioService))")
+    @Mapping(target = "progress", source = "progress")
     TaskDetailedResponseDto toDetailedDto(Task task,
+                                          TaskTimeProgressDto progress,
                                           @Context UserMapper userMapper,
                                           @Context ProjectMapper projectMapper,
                                           @Context MinioService minioService);

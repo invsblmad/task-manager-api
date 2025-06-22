@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  * Поддерживаемые единицы: w (недели), d (дни), h (часы).
  * 1 неделя = 5 рабочих дней, 1 день = 8 часов.
  */
-public class TimeEstimateUtil {
+public class TimeParserUtil {
 
     /**
      * Преобразует строку вида "xw yd zh" в минуты. Оценка времени
@@ -47,6 +47,10 @@ public class TimeEstimateUtil {
      * @return строка с оценкой времени
      */
     public static String formatFromMinutes(long minutes) {
+        if (minutes <= 0) {
+            return "Не определено";
+        }
+        
         long totalHours = minutes / 60;
         long weeks = totalHours / (5 * 8);
         totalHours %= 5 * 8;

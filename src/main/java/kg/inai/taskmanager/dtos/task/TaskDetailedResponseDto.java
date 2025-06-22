@@ -21,5 +21,6 @@ public record TaskDetailedResponseDto(String id,
                                       @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
                                       LocalDateTime updatedAt,
                                       String title,
-                                      String description) {
+                                      String description,
+                                      TaskTimeProgressDto progress) {
 }
