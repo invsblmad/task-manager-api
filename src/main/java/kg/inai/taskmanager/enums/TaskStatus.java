@@ -27,7 +27,7 @@ public enum TaskStatus {
     private final String description;
 
     private static final Map<TaskStatus, Set<TaskStatus>> TRANSITIONS = Map.of(
-            TaskStatus.BACKLOG, Set.of(TaskStatus.IN_ANALYSIS),
+            TaskStatus.BACKLOG, Set.of(TaskStatus.IN_ANALYSIS, TaskStatus.IN_PROGRESS),
             TaskStatus.IN_ANALYSIS, Set.of(TaskStatus.IN_PROGRESS, TaskStatus.PAUSED),
             TaskStatus.IN_PROGRESS, Set.of(TaskStatus.IN_ANALYSIS, TaskStatus.WAITING_FOR_TESTING, TaskStatus.PAUSED, TaskStatus.CANCELLED),
             TaskStatus.PAUSED, Set.of(TaskStatus.IN_ANALYSIS, TaskStatus.IN_PROGRESS, TaskStatus.CANCELLED),
