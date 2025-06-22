@@ -1,27 +1,24 @@
 package kg.inai.taskmanager.services.impl;
 
 import kg.inai.taskmanager.dtos.EnumDto;
+import kg.inai.taskmanager.dtos.task.TaskDetailedResponse;
 import kg.inai.taskmanager.dtos.task.TaskGroupResponse;
-import kg.inai.taskmanager.dtos.task.TaskStatusResponse;
+import kg.inai.taskmanager.dtos.task.TaskResponse;
 import kg.inai.taskmanager.entities.Task;
-import kg.inai.taskmanager.entities.TaskId;
 import kg.inai.taskmanager.enums.TaskStatus;
 import kg.inai.taskmanager.exceptions.NotFoundException;
 import kg.inai.taskmanager.exceptions.TaskManagerException;
-import kg.inai.taskmanager.dtos.task.TaskResponse;
 import kg.inai.taskmanager.mappers.TaskMapper;
 import kg.inai.taskmanager.mappers.UserMapper;
 import kg.inai.taskmanager.repositories.TaskRepository;
+import kg.inai.taskmanager.services.AuthService;
 import kg.inai.taskmanager.services.MinioService;
 import kg.inai.taskmanager.services.TaskService;
 import kg.inai.taskmanager.utils.TaskIdParsesUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -31,24 +28,13 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
     private final UserMapper userMapper;
     private final MinioService minioService;
+    private final AuthService authService;
 
     @Override
-    public List<TaskGroupResponse> getAll(String projectCode) {
-        List<TaskStatus> statuses = List.of(TaskStatus.BACKLOG, TaskStatus.IN_PROGRESS, TaskStatus.DONE);
-
+    public List<TaskGroupResponse> getAll(String projectCode, boolean filterByCurrentUser) {
+        List<TaskStatus> statuses = TaskStatus.getKanbanStatuses();
         return statuses.stream()
-                .map(status -> {
-                    List<Task> tasks = taskRepository.findAllByIdProjectCodeAndStatus(projectCode, status);
-                    List<TaskResponse> responses = tasks.stream()
-                            .map(task -> taskMapper.toDto(task, minioService, userMapper))
-                            .toList();
-
-                    return new TaskGroupResponse(
-                            new EnumDto(status.name(), status.getDescription()),
-                            responses.size(),
-                            responses
-                    );
-                })
+                .map(status -> groupTasks(projectCode, status, filterByCurrentUser))
                 .toList();
     }
 
@@ -71,5 +57,21 @@ public class TaskServiceImpl implements TaskService {
 
         task.setStatus(status);
         taskRepository.save(task);
+    }
+
+    private TaskGroupResponse groupTasks(String projectCode, TaskStatus status, boolean filterByCurrentUser) {
+        List<Task> tasks = filterByCurrentUser
+                ? taskRepository.findAllByIdProjectCodeAndStatusAndAssignedTo(projectCode, status, authService.getAuthenticatedUser())
+                : taskRepository.findAllByIdProjectCodeAndStatus(projectCode, status);
+
+        List<TaskResponse> taskResponses = tasks.stream()
+                .map(task -> taskMapper.toDto(task, userMapper, minioService))
+                .toList();
+
+        return new TaskGroupResponse(
+                new EnumDto(status.name(), status.getDescription()),
+                taskResponses.size(),
+                taskResponses
+        );
     }
 }

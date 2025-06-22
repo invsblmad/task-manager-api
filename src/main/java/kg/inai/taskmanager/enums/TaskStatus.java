@@ -4,6 +4,7 @@ import kg.inai.taskmanager.dtos.EnumDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,6 +45,10 @@ public enum TaskStatus {
 
     public static Set<TaskStatus> getAllowedTransitions(TaskStatus status) {
         return TRANSITIONS.getOrDefault(status, Set.of());
+    }
+
+    public static List<TaskStatus> getKanbanStatuses() {
+        return List.of(BACKLOG, IN_PROGRESS, DONE);
     }
 
     public static EnumDto toModel(TaskStatus status) {

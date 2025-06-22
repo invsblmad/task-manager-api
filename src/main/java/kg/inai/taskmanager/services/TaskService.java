@@ -13,7 +13,7 @@ import java.util.Map;
 
 public interface TaskService {
 
-    List<TaskGroupResponse> getAll(String projectCode);
+    List<TaskGroupResponse> getAll(String projectCode, boolean filterByCurrentUser);
 
     List<EnumDto> getAllowedStatusTransitions(TaskStatus status);
 

@@ -2,6 +2,7 @@ package kg.inai.taskmanager.repositories;
 
 import kg.inai.taskmanager.entities.Task;
 import kg.inai.taskmanager.entities.TaskId;
+import kg.inai.taskmanager.entities.User;
 import kg.inai.taskmanager.enums.TaskStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,5 +19,7 @@ public interface TaskRepository extends JpaRepository<Task, TaskId> {
     Long findMaxSequenceNumberByProjectCode(@Param("projectCode") String projectCode);
 
     List<Task> findAllByIdProjectCodeAndStatus(String projectCode, TaskStatus status);
+
+    List<Task> findAllByIdProjectCodeAndStatusAndAssignedTo(String projectCode, TaskStatus status, User user);
 
 }

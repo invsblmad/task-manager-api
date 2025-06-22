@@ -51,15 +51,16 @@ public class TaskController {
         taskService.moveToStatus(id, status);
     }
 
-    @GetMapping("/{projectCode}")
+    @GetMapping("/by-project/{projectCode}")
     @Operation(summary = "Получение всех задач проекта, отсортированных по статусам Backlog, В процессе, Готово")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = TaskGroupResponse.class)))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<List<TaskGroupResponse> > getAll(@PathVariable String projectCode) {
-        return ResponseEntity.ok(taskService.getAll(projectCode));
+    public ResponseEntity<List<TaskGroupResponse> > getAll(@PathVariable String projectCode,
+                                                           @RequestParam(required = false) boolean filterByCurrentUser) {
+        return ResponseEntity.ok(taskService.getAll(projectCode, filterByCurrentUser));
     }
 
 }
