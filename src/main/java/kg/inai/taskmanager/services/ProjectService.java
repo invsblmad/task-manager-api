@@ -2,6 +2,7 @@ package kg.inai.taskmanager.services;
 
 import kg.inai.taskmanager.dtos.project.ProjectRequest;
 import kg.inai.taskmanager.dtos.project.ProjectResponse;
+import kg.inai.taskmanager.dtos.project.ProjectUpdateRequest;
 import kg.inai.taskmanager.enums.ProjectStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,7 @@ public interface ProjectService {
 
     ProjectResponse save(ProjectRequest request, MultipartFile image);
 
-    void update(String code, ProjectRequest request, MultipartFile image);
+    void update(String code, ProjectUpdateRequest request, MultipartFile image);
 
     void updateStatus(String code, ProjectStatus status);
 }

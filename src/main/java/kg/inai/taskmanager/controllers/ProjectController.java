@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kg.inai.taskmanager.dtos.project.ProjectRequest;
 import kg.inai.taskmanager.dtos.project.ProjectResponse;
+import kg.inai.taskmanager.dtos.project.ProjectUpdateRequest;
 import kg.inai.taskmanager.enums.ProjectStatus;
 import kg.inai.taskmanager.services.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -87,7 +88,7 @@ public class ProjectController {
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public void update(@PathVariable String code,
-                       @RequestPart(name = "data", required = false) @Valid ProjectRequest request,
+                       @RequestPart(name = "data", required = false) @Valid ProjectUpdateRequest request,
                        @RequestPart(name = "file", required = false) MultipartFile image) {
         projectService.update(code, request, image);
     }

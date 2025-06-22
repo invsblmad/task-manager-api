@@ -1,5 +1,6 @@
 package kg.inai.taskmanager.services.impl;
 
+import kg.inai.taskmanager.dtos.project.ProjectUpdateRequest;
 import kg.inai.taskmanager.entities.Project;
 import kg.inai.taskmanager.enums.FileType;
 import kg.inai.taskmanager.enums.ProjectStatus;
@@ -72,12 +73,11 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void update(String code, ProjectRequest request, MultipartFile image) {
+    public void update(String code, ProjectUpdateRequest request, MultipartFile image) {
         Project project = projectRepository.findByCode(code)
                 .orElseThrow(() -> new NotFoundException("Проект не найден"));
 
         if (request != null) {
-            project.setCode(request.code());
             project.setName(request.name());
         }
 
@@ -89,11 +89,7 @@ public class ProjectServiceImpl implements ProjectService {
             project.setImagePath(imagePath);
         }
 
-        try {
-            projectRepository.save(project);
-        } catch (DataIntegrityViolationException e) {
-            throw new AlreadyExistsException("Проект с таким кодом уже существует");
-        }
+        projectRepository.save(project);
     }
 
     @Override
