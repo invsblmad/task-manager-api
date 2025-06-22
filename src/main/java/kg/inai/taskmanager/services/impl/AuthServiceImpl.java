@@ -2,6 +2,7 @@ package kg.inai.taskmanager.services.impl;
 
 import kg.inai.taskmanager.dtos.auth.SignUpRequestDto;
 import kg.inai.taskmanager.entities.User;
+import kg.inai.taskmanager.enums.UserStatus;
 import kg.inai.taskmanager.exceptions.PasswordNotConfirmedException;
 import kg.inai.taskmanager.exceptions.AlreadyExistsException;
 import kg.inai.taskmanager.mappers.UserMapper;
@@ -53,6 +54,7 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userMapper.toEntity(signUpRequest);
         user.setPassword(passwordEncoder.encode(signUpRequest.password()));
+        user.setStatus(UserStatus.ACTIVE);
 
         try {
             user = userRepository.save(user);
