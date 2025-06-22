@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kg.inai.taskmanager.dtos.task.GeneratedSubtaskDto;
 import kg.inai.taskmanager.exceptions.TaskManagerException;
 import kg.inai.taskmanager.services.OpenAiService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class OpenAiServiceImpl implements OpenAiService {
 
@@ -38,6 +40,8 @@ public class OpenAiServiceImpl implements OpenAiService {
                 .user(prompt)
                 .call()
                 .content();
+
+        log.info("OpenAI JSON response: {}", jsonResponse);
 
         try {
             return objectMapper.readValue(jsonResponse, new TypeReference<>() {});
