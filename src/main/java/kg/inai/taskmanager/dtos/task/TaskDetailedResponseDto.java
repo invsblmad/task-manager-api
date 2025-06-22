@@ -7,6 +7,7 @@ import kg.inai.taskmanager.dtos.team.TeamResponseDto;
 import kg.inai.taskmanager.dtos.user.UserShortResponseDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record TaskDetailedResponseDto(String id,
                                       ProjectResponseDto project,
@@ -22,5 +23,6 @@ public record TaskDetailedResponseDto(String id,
                                       LocalDateTime updatedAt,
                                       String title,
                                       String description,
-                                      TaskTimeProgressDto progress) {
+                                      TaskTimeProgressDto progress,
+                                      List<SubtaskResponseDto> subtasks) {
 }

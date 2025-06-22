@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -55,33 +56,35 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(TaskIdParsesUtil.parse(id))
                 .orElseThrow(() -> new NotFoundException("Задача не найдена"));
 
-        TaskTimeProgressDto progress = buildProgress(
-                task.getEstimateMinutes(),
-                task.getRemainingMinutes());
+        TaskTimeProgressDto progress = buildProgress(task);
 
-        return taskMapper.toDetailedDto(task, progress, userMapper, projectMapper, minioService);
+        List<SubtaskResponseDto> subtasks = task.getSubtasks().stream()
+                .map(s -> taskMapper.toSubtaskDto(s, buildProgress(s), userMapper, minioService))
+                .toList();
+
+        return taskMapper.toDetailedDto(
+                task, progress, subtasks, userMapper, projectMapper, minioService
+        );
     }
 
     @Override
     public TaskDetailedResponseDto save(TaskRequestDto request, List<MultipartFile> files) {
         Task task = createTask(null, request, files);
+        TaskTimeProgressDto progress = buildProgress(task);
 
-        TaskTimeProgressDto progress = buildProgress(
-                task.getEstimateMinutes(),
-                task.getRemainingMinutes());
-
-        return taskMapper.toDetailedDto(task, progress, userMapper, projectMapper, minioService);
+        return taskMapper.toDetailedDto(
+                task, progress, Collections.emptyList(), userMapper, projectMapper, minioService
+        );
     }
 
     @Override
     public TaskDetailedResponseDto saveSubtask(String parentTaskId, TaskRequestDto request, List<MultipartFile> files) {
         Task task = createTask(parentTaskId, request, files);
+        TaskTimeProgressDto progress = buildProgress(task);
 
-        TaskTimeProgressDto progress = buildProgress(
-                task.getEstimateMinutes(),
-                task.getRemainingMinutes());
-
-        return taskMapper.toDetailedDto(task, progress, userMapper, projectMapper, minioService);
+        return taskMapper.toDetailedDto(
+                task, progress, Collections.emptyList(), userMapper, projectMapper, minioService
+        );
     }
 
     @Override
@@ -169,7 +172,9 @@ public class TaskServiceImpl implements TaskService {
         task.setRemainingMinutes(remaining);
     }
 
-    private TaskTimeProgressDto buildProgress(long estimate, long remaining) {
+    private TaskTimeProgressDto buildProgress(Task task) {
+        long estimate = task.getEstimateMinutes();
+        long remaining = task.getRemainingMinutes();
         long spent = estimate - remaining;
 
         int spentPercent = (int) ((double) spent / estimate * 100);

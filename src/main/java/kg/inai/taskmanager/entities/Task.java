@@ -76,5 +76,10 @@ public class Task {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt ASC")
     private List<Attachment> attachments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "parentTask", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt ASC")
+    private List<Task> subtasks = new ArrayList<>();
 }
