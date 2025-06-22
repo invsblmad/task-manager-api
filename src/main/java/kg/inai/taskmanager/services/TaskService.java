@@ -24,4 +24,6 @@ public interface TaskService {
     void moveToStatus(String id, TaskStatus status);
 
     GeneratedResultResponseDto generateSubtasks(String id);
+
+    void saveSubtasks(String parentTaskId, List<SubtaskCreateRequestDto> subtasks);
 }

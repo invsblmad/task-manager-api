@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import kg.inai.taskmanager.enums.TaskPriority;
 import kg.inai.taskmanager.enums.TaskStatus;
 import kg.inai.taskmanager.enums.TaskType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,6 +14,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity

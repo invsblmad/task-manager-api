@@ -123,4 +123,10 @@ public class TaskController {
     public ResponseEntity<GeneratedResultResponseDto> generateSubtasks(@PathVariable String id) {
         return ResponseEntity.ok(taskService.generateSubtasks(id));
     }
+
+    @PostMapping("/sub-tasks/for/{parentTaskId}")
+    public void saveSubtasks(@PathVariable String parentTaskId,
+                             @Valid @RequestBody List<SubtaskCreateRequestDto> subtasks) {
+        taskService.saveSubtasks(parentTaskId, subtasks);
+    }
 }

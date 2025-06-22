@@ -6,7 +6,9 @@ import kg.inai.taskmanager.entities.Project;
 import kg.inai.taskmanager.entities.Task;
 import kg.inai.taskmanager.entities.TaskId;
 import kg.inai.taskmanager.entities.User;
+import kg.inai.taskmanager.enums.TaskPriority;
 import kg.inai.taskmanager.enums.TaskStatus;
+import kg.inai.taskmanager.enums.TaskType;
 import kg.inai.taskmanager.exceptions.NotFoundException;
 import kg.inai.taskmanager.exceptions.TaskManagerException;
 import kg.inai.taskmanager.mappers.ProjectMapper;
@@ -23,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -132,6 +135,23 @@ public class TaskServiceImpl implements TaskService {
         return new GeneratedResultResponseDto(task.getTitle(), subtasks);
     }
 
+    @Override
+    public void saveSubtasks(String parentTaskId, List<SubtaskCreateRequestDto> subtasks) {
+        Task task = taskRepository.findById(TaskIdParsesUtil.parse(parentTaskId))
+                .orElseThrow(() -> new NotFoundException("Задача не найдена"));
+
+        Long maxSeq = taskRepository.findMaxSequenceNumberByProjectCode(task.getProject().getCode());
+        long currentSeq = (maxSeq == null) ? 1L : maxSeq + 1;
+
+        List<Task> result = new ArrayList<>();
+        for (SubtaskCreateRequestDto request : subtasks) {
+            TaskId newTaskId = new TaskId(task.getProject().getCode(), currentSeq++);
+            result.add(buildSubtask(task, request, newTaskId));
+        }
+
+        taskRepository.saveAll(result);
+    }
+
     private TaskGroupResponseDto groupTasks(String projectCode, TaskStatus status, boolean filterByCurrentUser) {
         List<Task> tasks = filterByCurrentUser
                 ? taskRepository.findAllByIdProjectCodeAndStatusAndAssignedTo(projectCode, status, authService.getAuthenticatedUser())
@@ -211,6 +231,23 @@ public class TaskServiceImpl implements TaskService {
                 .remainingTime(TimeParserUtil.formatFromMinutes(remaining))
                 .spentPercent(spentPercent)
                 .remainingPercent(remainingPercent)
+                .build();
+    }
+
+    private Task buildSubtask(Task parentTask, SubtaskCreateRequestDto request, TaskId id) {
+        return Task.builder()
+                .id(id)
+                .title(request.title())
+                .description(request.description())
+                .type(TaskType.SUBTASK)
+                .priority(TaskPriority.MEDIUM)
+                .status(TaskStatus.BACKLOG)
+                .parentTask(parentTask)
+                .project(parentTask.getProject())
+                .createdBy(authService.getAuthenticatedUser())
+                .assignedTo(authService.getAuthenticatedUser())
+                .estimateMinutes(0L)
+                .remainingMinutes(0L)
                 .build();
     }
 }
