@@ -68,7 +68,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDetailedResponseDto save(TaskRequestDto request, List<MultipartFile> files) {
+    public TaskDetailedResponseDto save(TaskCreateRequestDto request, List<MultipartFile> files) {
         Task task = createTask(null, request, files);
         TaskTimeProgressDto progress = buildProgress(task);
 
@@ -78,13 +78,31 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskDetailedResponseDto saveSubtask(String parentTaskId, TaskRequestDto request, List<MultipartFile> files) {
+    public TaskDetailedResponseDto saveSubtask(String parentTaskId, TaskCreateRequestDto request, List<MultipartFile> files) {
         Task task = createTask(parentTaskId, request, files);
         TaskTimeProgressDto progress = buildProgress(task);
 
         return taskMapper.toDetailedDto(
                 task, progress, Collections.emptyList(), userMapper, projectMapper, minioService
         );
+    }
+
+    @Override
+    public void update(String id, TaskUpdateRequestDto request, List<MultipartFile> files) {
+        Task task = taskRepository.findById(TaskIdParsesUtil.parse(id))
+                .orElseThrow(() -> new NotFoundException("Задача не найдена"));
+
+        User user = userRepository.findById(request.assignedUserId())
+                .orElseThrow(() -> new NotFoundException("Не найден исполнитель задачи"));
+
+        task.setAssignedTo(user);
+        task.setTitle(request.title());
+        task.setDescription(request.description());
+        task.setPriority(request.priority());
+
+        applyEstimates(task, request.estimate(), request.remainingTime());
+        taskRepository.save(task);
+        attachmentService.save(task, files);
     }
 
     @Override
@@ -130,7 +148,7 @@ public class TaskServiceImpl implements TaskService {
         return new TaskId(projectCode, newSeq);
     }
 
-    private Task createTask(String parentTaskId, TaskRequestDto request, List<MultipartFile> files) {
+    private Task createTask(String parentTaskId, TaskCreateRequestDto request, List<MultipartFile> files) {
         Project project = projectRepository.findByCode(request.projectCode())
                 .orElseThrow(() -> new NotFoundException("Пррект не найден"));
 
@@ -151,25 +169,25 @@ public class TaskServiceImpl implements TaskService {
         task.setCreatedBy(authService.getAuthenticatedUser());
         task.setParentTask(parentTask);
 
-        applyEstimates(task, request);
+        applyEstimates(task, request.estimate(), request.remainingTime());
 
         task = taskRepository.save(task);
         attachmentService.save(task, files);
         return task;
     }
 
-    private void applyEstimates(Task task, TaskRequestDto request) {
-        if (StringUtils.isBlank(request.estimate())) {
+    private void applyEstimates(Task task, String estimate, String remainingTime) {
+        if (StringUtils.isBlank(estimate)) {
             return;
         }
 
-        Long estimate = TimeParserUtil.parseToMinutes(request.estimate());
-        Long remaining = StringUtils.isBlank(request.remainingTime())
-                ? estimate
-                : TimeParserUtil.parseToMinutes(request.remainingTime());
+        Long estimateMinutes = TimeParserUtil.parseToMinutes(estimate);
+        Long remainingMinutes = StringUtils.isBlank(remainingTime)
+                ? estimateMinutes
+                : TimeParserUtil.parseToMinutes(remainingTime);
 
-        task.setEstimateMinutes(estimate);
-        task.setRemainingMinutes(remaining);
+        task.setEstimateMinutes(estimateMinutes);
+        task.setRemainingMinutes(remainingMinutes);
     }
 
     private TaskTimeProgressDto buildProgress(Task task) {

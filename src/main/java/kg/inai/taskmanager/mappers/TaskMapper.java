@@ -43,7 +43,7 @@ public interface TaskMapper {
                                     @Context UserMapper userMapper,
                                     @Context MinioService minioService);
 
-    Task toEntity(TaskRequestDto taskRequest);
+    Task toEntity(TaskCreateRequestDto taskRequest);
 
     default String map(TaskId taskId) {
         return TaskIdParsesUtil.format(taskId);

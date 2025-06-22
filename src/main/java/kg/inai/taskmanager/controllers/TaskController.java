@@ -11,7 +11,8 @@ import jakarta.validation.Valid;
 import kg.inai.taskmanager.dtos.EnumDto;
 import kg.inai.taskmanager.dtos.task.TaskDetailedResponseDto;
 import kg.inai.taskmanager.dtos.task.TaskGroupResponseDto;
-import kg.inai.taskmanager.dtos.task.TaskRequestDto;
+import kg.inai.taskmanager.dtos.task.TaskCreateRequestDto;
+import kg.inai.taskmanager.dtos.task.TaskUpdateRequestDto;
 import kg.inai.taskmanager.enums.TaskStatus;
 import kg.inai.taskmanager.services.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -82,7 +83,7 @@ public class TaskController {
             @ApiResponse(responseCode = "400", description = "Ошибка валидации"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<TaskDetailedResponseDto> save(@RequestPart("data") @Valid TaskRequestDto request,
+    public ResponseEntity<TaskDetailedResponseDto> save(@RequestPart("data") @Valid TaskCreateRequestDto request,
                                                         @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         return ResponseEntity.ok(taskService.save(request, files));
     }
@@ -96,8 +97,21 @@ public class TaskController {
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public ResponseEntity<TaskDetailedResponseDto> saveSubtask(@PathVariable String parentTaskId,
-                                                               @RequestPart("data") @Valid TaskRequestDto request,
+                                                               @RequestPart("data") @Valid TaskCreateRequestDto request,
                                                                @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         return ResponseEntity.ok(taskService.saveSubtask(parentTaskId, request, files));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Редактирование задачи")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно"),
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации"),
+            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+    })
+    public void update(@PathVariable String id,
+                       @RequestPart("data") @Valid TaskUpdateRequestDto request,
+                       @RequestPart(value = "files", required = false) List<MultipartFile> files) {
+        taskService.update(id, request, files);
     }
 }

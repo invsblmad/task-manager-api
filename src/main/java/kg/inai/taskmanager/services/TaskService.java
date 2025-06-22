@@ -1,9 +1,10 @@
 package kg.inai.taskmanager.services;
 
 import kg.inai.taskmanager.dtos.EnumDto;
-import kg.inai.taskmanager.dtos.task.TaskRequestDto;
+import kg.inai.taskmanager.dtos.task.TaskCreateRequestDto;
 import kg.inai.taskmanager.dtos.task.TaskDetailedResponseDto;
 import kg.inai.taskmanager.dtos.task.TaskGroupResponseDto;
+import kg.inai.taskmanager.dtos.task.TaskUpdateRequestDto;
 import kg.inai.taskmanager.enums.TaskStatus;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,9 +16,11 @@ public interface TaskService {
 
     TaskDetailedResponseDto getById(String id);
 
-    TaskDetailedResponseDto save(TaskRequestDto request, List<MultipartFile> files);
+    TaskDetailedResponseDto save(TaskCreateRequestDto request, List<MultipartFile> files);
 
-    TaskDetailedResponseDto saveSubtask(String parentTaskId, TaskRequestDto request, List<MultipartFile> files);
+    TaskDetailedResponseDto saveSubtask(String parentTaskId, TaskCreateRequestDto request, List<MultipartFile> files);
+
+    void update(String id, TaskUpdateRequestDto request, List<MultipartFile> files);
 
     List<EnumDto> getAllowedStatusTransitions(TaskStatus status);
 
