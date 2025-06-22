@@ -6,14 +6,12 @@ import kg.inai.taskmanager.entities.Project;
 import kg.inai.taskmanager.entities.Task;
 import kg.inai.taskmanager.entities.TaskId;
 import kg.inai.taskmanager.entities.User;
-import kg.inai.taskmanager.enums.FileType;
 import kg.inai.taskmanager.enums.TaskStatus;
 import kg.inai.taskmanager.exceptions.NotFoundException;
 import kg.inai.taskmanager.exceptions.TaskManagerException;
 import kg.inai.taskmanager.mappers.ProjectMapper;
 import kg.inai.taskmanager.mappers.TaskMapper;
 import kg.inai.taskmanager.mappers.UserMapper;
-import kg.inai.taskmanager.model.AttachmentModel;
 import kg.inai.taskmanager.repositories.ProjectRepository;
 import kg.inai.taskmanager.repositories.TaskRepository;
 import kg.inai.taskmanager.repositories.UserRepository;
@@ -153,7 +151,7 @@ public class TaskServiceImpl implements TaskService {
         applyEstimates(task, request);
 
         task = taskRepository.save(task);
-        saveAttachments(task, files);
+        attachmentService.save(task, files);
         return task;
     }
 
@@ -169,24 +167,6 @@ public class TaskServiceImpl implements TaskService {
 
         task.setEstimateMinutes(estimate);
         task.setRemainingMinutes(remaining);
-    }
-
-    private void saveAttachments(Task task, List<MultipartFile> files) {
-        if (files == null || files.isEmpty()) return;
-
-        for (MultipartFile file : files) {
-            if (file.isEmpty()) continue;
-
-            String path = minioService.save(file, null, FileType.TASK_ATTACHMENT.getPath());
-
-            attachmentService.save(AttachmentModel.builder()
-                    .originalFileName(file.getOriginalFilename())
-                    .storagePath(path)
-                    .contentType(file.getContentType())
-                    .task(task)
-                    .user(authService.getAuthenticatedUser())
-                    .build());
-        }
     }
 
     private TaskTimeProgressDto buildProgress(long estimate, long remaining) {

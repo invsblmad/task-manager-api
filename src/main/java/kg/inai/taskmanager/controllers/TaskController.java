@@ -9,11 +9,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kg.inai.taskmanager.dtos.EnumDto;
-import kg.inai.taskmanager.dtos.task.TaskRequestDto;
 import kg.inai.taskmanager.dtos.task.TaskDetailedResponseDto;
 import kg.inai.taskmanager.dtos.task.TaskGroupResponseDto;
+import kg.inai.taskmanager.dtos.task.TaskRequestDto;
 import kg.inai.taskmanager.enums.TaskStatus;
-import kg.inai.taskmanager.services.MinioService;
 import kg.inai.taskmanager.services.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +28,6 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService;
-    private final MinioService minioService;
 
     @GetMapping("/statuses/{status}/transitions")
     @Operation(summary = "Получение статусов задачи, на которые можно перевести с текущего статуса")
@@ -85,7 +83,7 @@ public class TaskController {
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
     public ResponseEntity<TaskDetailedResponseDto> save(@RequestPart("data") @Valid TaskRequestDto request,
-                                                        @RequestPart("files") List<MultipartFile> files) {
+                                                        @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         return ResponseEntity.ok(taskService.save(request, files));
     }
 
@@ -99,7 +97,7 @@ public class TaskController {
     })
     public ResponseEntity<TaskDetailedResponseDto> saveSubtask(@PathVariable String parentTaskId,
                                                                @RequestPart("data") @Valid TaskRequestDto request,
-                                                               @RequestPart("files") List<MultipartFile> files) {
+                                                               @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         return ResponseEntity.ok(taskService.saveSubtask(parentTaskId, request, files));
     }
 }

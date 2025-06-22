@@ -12,6 +12,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -72,4 +74,7 @@ public class Task {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Attachment> attachments = new ArrayList<>();
 }
