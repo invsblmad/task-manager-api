@@ -1,7 +1,6 @@
 package kg.inai.taskmanager.services.impl;
 
 import kg.inai.taskmanager.dtos.EnumDto;
-import kg.inai.taskmanager.dtos.task.TaskDetailedResponse;
 import kg.inai.taskmanager.dtos.task.TaskGroupResponse;
 import kg.inai.taskmanager.dtos.task.TaskResponse;
 import kg.inai.taskmanager.entities.Task;
