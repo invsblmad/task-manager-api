@@ -7,10 +7,12 @@ import kg.inai.taskmanager.entities.Task;
 import kg.inai.taskmanager.enums.CommentStatus;
 import kg.inai.taskmanager.exceptions.NotFoundException;
 import kg.inai.taskmanager.mappers.CommentMapper;
+import kg.inai.taskmanager.mappers.UserMapper;
 import kg.inai.taskmanager.repositories.CommentRepository;
 import kg.inai.taskmanager.repositories.TaskRepository;
 import kg.inai.taskmanager.services.AuthService;
 import kg.inai.taskmanager.services.CommentService;
+import kg.inai.taskmanager.services.MinioService;
 import kg.inai.taskmanager.utils.TaskIdParsesUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final TaskRepository taskRepository;
     private final CommentMapper commentMapper;
+    private final UserMapper userMapper;
+    private final MinioService minioService;
     private final AuthService authService;
 
     @Override
@@ -32,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new NotFoundException("Задача не найдена"));
 
         return commentRepository.findAllByTask(task).stream()
-                .map(commentMapper::toDto)
+                .map(comment -> commentMapper.toDto(comment, userMapper, minioService))
                 .toList();
     }
 
@@ -42,7 +46,7 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new NotFoundException("Задача не найдена"));
 
         return commentRepository.findAllByTaskAndStatusNot(task, CommentStatus.DELETED).stream()
-                .map(commentMapper::toDto)
+                .map(comment -> commentMapper.toDto(comment, userMapper, minioService))
                 .toList();
     }
 
@@ -51,7 +55,7 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Комментарий не найден"));
 
-        return commentMapper.toDto(comment);
+        return commentMapper.toDto(comment, userMapper, minioService);
     }
 
     @Override
@@ -65,7 +69,7 @@ public class CommentServiceImpl implements CommentService {
         comment.setTask(task);
 
         comment = commentRepository.save(comment);
-        return commentMapper.toDto(comment);
+        return commentMapper.toDto(comment, userMapper, minioService);
     }
 
     @Override
