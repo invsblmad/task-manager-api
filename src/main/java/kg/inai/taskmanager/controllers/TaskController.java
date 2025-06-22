@@ -88,11 +88,4 @@ public class TaskController {
                                                         @RequestPart("files") List<MultipartFile> files) {
         return ResponseEntity.ok(taskService.save(request, files));
     }
-
-    @GetMapping("/test")
-    public String test() {
-        return minioService.getDownloadUrl("project-images/2025/06/22/88834ff5-858a-4faa-bba5-4bc6b8298d2b.png", "image/png", "crm.png");
-    }
-
-
 }

@@ -57,7 +57,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDetailedResponseDto getById(String id) {
-        return null;
+        Task task = taskRepository.findById(TaskIdParsesUtil.parse(id))
+                .orElseThrow(() -> new NotFoundException("Задача не найдена"));
+
+        return taskMapper.toDetailedDto(task, userMapper, projectMapper, minioService);
     }
 
     @Override
