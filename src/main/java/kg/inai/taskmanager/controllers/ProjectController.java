@@ -53,15 +53,15 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.getAll(pageable));
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Получение проекта по id")
+    @GetMapping("/{code}")
+    @Operation(summary = "Получение проекта по коду")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно",
                     content = @Content(schema = @Schema(implementation = ProjectResponse.class))),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public ResponseEntity<ProjectResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(projectService.getById(id));
+    public ResponseEntity<ProjectResponse> getByCode(@PathVariable String code) {
+        return ResponseEntity.ok(projectService.getByCode(code));
     }
 
     @PostMapping
@@ -78,7 +78,7 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.save(request, image));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{code}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Обновление данных проекта")
     @ApiResponses(value = {
@@ -86,20 +86,20 @@ public class ProjectController {
             @ApiResponse(responseCode = "400", description = "Ошибка валидации"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public void update(@PathVariable Long id,
+    public void update(@PathVariable String code,
                        @RequestPart(name = "data", required = false) @Valid ProjectRequest request,
                        @RequestPart(name = "file", required = false) MultipartFile image) {
-        projectService.update(id, request, image);
+        projectService.update(code, request, image);
     }
 
-    @PutMapping("/{id}/{status}")
+    @PutMapping("/{code}/{status}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Изменение статуса проекта")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешно"),
             @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
     })
-    public void updateStatus(@PathVariable Long id, @PathVariable ProjectStatus status) {
-        projectService.updateStatus(id, status);
+    public void updateStatus(@PathVariable String code, @PathVariable ProjectStatus status) {
+        projectService.updateStatus(code, status);
     }
 }

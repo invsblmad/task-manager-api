@@ -15,11 +15,11 @@ public interface ProjectService {
 
     List<ProjectResponse> getAllActive();
 
-    ProjectResponse getById(Long id);
+    ProjectResponse getByCode(String code);
 
     ProjectResponse save(ProjectRequest request, MultipartFile image);
 
-    void update(Long id, ProjectRequest request, MultipartFile image);
+    void update(String code, ProjectRequest request, MultipartFile image);
 
-    void updateStatus(Long id, ProjectStatus status);
+    void updateStatus(String code, ProjectStatus status);
 }

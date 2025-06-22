@@ -43,8 +43,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public ProjectResponse getById(Long id) {
-        Project project = projectRepository.findById(id)
+    public ProjectResponse getByCode(String code) {
+        Project project = projectRepository.findByCode(code)
                 .orElseThrow(() -> new NotFoundException("Проект не найден"));
 
         return projectMapper.toDto(project, minioService);
@@ -72,8 +72,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void update(Long id, ProjectRequest request, MultipartFile image) {
-        Project project = projectRepository.findById(id)
+    public void update(String code, ProjectRequest request, MultipartFile image) {
+        Project project = projectRepository.findByCode(code)
                 .orElseThrow(() -> new NotFoundException("Проект не найден"));
 
         if (request != null) {
@@ -97,8 +97,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void updateStatus(Long id, ProjectStatus status) {
-        Project project = projectRepository.findById(id)
+    public void updateStatus(String code, ProjectStatus status) {
+        Project project = projectRepository.findByCode(code)
                 .orElseThrow(() -> new NotFoundException("Проект не найден"));
 
         project.setStatus(status);
