@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kg.inai.taskmanager.dtos.EnumDto;
-import kg.inai.taskmanager.dtos.task.TaskDetailedResponseDto;
-import kg.inai.taskmanager.dtos.task.TaskGroupResponseDto;
-import kg.inai.taskmanager.dtos.task.TaskCreateRequestDto;
-import kg.inai.taskmanager.dtos.task.TaskUpdateRequestDto;
+import kg.inai.taskmanager.dtos.task.*;
 import kg.inai.taskmanager.enums.TaskStatus;
 import kg.inai.taskmanager.services.TaskService;
 import lombok.RequiredArgsConstructor;
@@ -113,5 +110,17 @@ public class TaskController {
                        @RequestPart("data") @Valid TaskUpdateRequestDto request,
                        @RequestPart(value = "files", required = false) List<MultipartFile> files) {
         taskService.update(id, request, files);
+    }
+
+    @PostMapping("/{id}/generate")
+    @Operation(summary = "Генерация подзадач с помощью AI")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Успешно",
+                    content = @Content(schema = @Schema(implementation = TaskDetailedResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "Ошибка валидации"),
+            @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+    })
+    public ResponseEntity<GeneratedResultResponseDto> generateSubtasks(@PathVariable String id) {
+        return ResponseEntity.ok(taskService.generateSubtasks(id));
     }
 }

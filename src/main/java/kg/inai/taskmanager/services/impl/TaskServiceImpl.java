@@ -15,10 +15,7 @@ import kg.inai.taskmanager.mappers.UserMapper;
 import kg.inai.taskmanager.repositories.ProjectRepository;
 import kg.inai.taskmanager.repositories.TaskRepository;
 import kg.inai.taskmanager.repositories.UserRepository;
-import kg.inai.taskmanager.services.AttachmentService;
-import kg.inai.taskmanager.services.AuthService;
-import kg.inai.taskmanager.services.MinioService;
-import kg.inai.taskmanager.services.TaskService;
+import kg.inai.taskmanager.services.*;
 import kg.inai.taskmanager.utils.TaskIdParsesUtil;
 import kg.inai.taskmanager.utils.TimeParserUtil;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +39,7 @@ public class TaskServiceImpl implements TaskService {
     private final MinioService minioService;
     private final AuthService authService;
     private final AttachmentService attachmentService;
+    private final OpenAiService openAiService;
 
     @Override
     public List<TaskGroupResponseDto> getAll(String projectCode, boolean filterByCurrentUser) {
@@ -123,6 +121,15 @@ public class TaskServiceImpl implements TaskService {
 
         task.setStatus(status);
         taskRepository.save(task);
+    }
+
+    @Override
+    public GeneratedResultResponseDto generateSubtasks(String id) {
+        Task task = taskRepository.findById(TaskIdParsesUtil.parse(id))
+                .orElseThrow(() -> new NotFoundException("Задача не найдена"));
+
+        List<GeneratedSubtaskDto> subtasks = openAiService.generateSubtasks(task.getDescription());
+        return new GeneratedResultResponseDto(task.getTitle(), subtasks);
     }
 
     private TaskGroupResponseDto groupTasks(String projectCode, TaskStatus status, boolean filterByCurrentUser) {
