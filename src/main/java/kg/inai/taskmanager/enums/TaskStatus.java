@@ -29,7 +29,7 @@ public enum TaskStatus {
     private static final Map<TaskStatus, Set<TaskStatus>> TRANSITIONS = Map.of(
             TaskStatus.BACKLOG, Set.of(TaskStatus.IN_ANALYSIS, TaskStatus.IN_PROGRESS),
             TaskStatus.IN_ANALYSIS, Set.of(TaskStatus.IN_PROGRESS, TaskStatus.PAUSED),
-            TaskStatus.IN_PROGRESS, Set.of(TaskStatus.IN_ANALYSIS, TaskStatus.WAITING_FOR_TESTING, TaskStatus.PAUSED, TaskStatus.CANCELLED),
+            TaskStatus.IN_PROGRESS, Set.of(TaskStatus.IN_ANALYSIS, TaskStatus.WAITING_FOR_TESTING, TaskStatus.PAUSED, TaskStatus.CANCELLED, TaskStatus.DONE),
             TaskStatus.PAUSED, Set.of(TaskStatus.IN_ANALYSIS, TaskStatus.IN_PROGRESS, TaskStatus.CANCELLED),
             TaskStatus.WAITING_FOR_TESTING, Set.of(TaskStatus.TESTING, TaskStatus.IN_PROGRESS),
             TaskStatus.TESTING, Set.of(TaskStatus.ON_REVIEW, TaskStatus.TO_MERGE, TaskStatus.IN_PROGRESS),
