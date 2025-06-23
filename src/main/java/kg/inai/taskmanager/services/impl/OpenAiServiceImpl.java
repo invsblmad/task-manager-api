@@ -18,7 +18,7 @@ public class OpenAiServiceImpl implements OpenAiService {
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
     private static final String promptTemplate = """
-        Разбей следующую задачу на максимум 3 подзадачи. Ответ строго в виде JSON-массива объектов, где каждый объект содержит:
+        Разбей следующую задачу на максимум 5 подзадач. Ответ строго в виде JSON-массива объектов, где каждый объект содержит:
         - number: порядковый номер подзадачи,
         - title: заголовок до 10 слов,
         - description: описание до 30 слов.
